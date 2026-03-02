@@ -1,0 +1,19 @@
+{
+  "name": "bar-inventory-mvp",
+  "version": "1.0.0",
+  "description": "Beginner-friendly bar inventory app (Express + SQLite + vanilla JS)",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0"
+  }
+}
