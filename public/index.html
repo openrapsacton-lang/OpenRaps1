@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar Inventory MVP</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <h1>Bar Inventory</h1>
+        <p>Track bottles, quantities, and stock status.</p>
+      </div>
+      <button id="add-item-btn" class="btn primary">+ Add Item</button>
+    </header>
+
+    <main>
+      <section class="controls card">
+        <label>
+          Search
+          <input id="search-input" type="text" placeholder="Search by name" />
+        </label>
+
+        <label>
+          Category
+          <select id="category-filter"></select>
+        </label>
+
+        <label>
+          Status
+          <select id="status-filter"></select>
+        </label>
+
+        <label>
+          Sort
+          <select id="sort-field">
+            <option value="updated_at">Updated At</option>
+            <option value="name">Name</option>
+            <option value="category">Category</option>
+            <option value="status">Status</option>
+          </select>
+        </label>
+
+        <label>
+          Order
+          <select id="sort-order">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
+        </label>
+
+        <label class="checkbox">
+          <input id="low-stock-toggle" type="checkbox" />
+          Low Stock Only
+        </label>
+      </section>
+
+      <section class="card">
+        <div class="table-wrap">
+          <table id="items-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Status</th>
+                <th>Par Level</th>
+                <th>Updated At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p id="empty-state" class="hidden">No items found. Try changing your filters.</p>
+      <p id="loading-indicator" class="hidden">Loading...</p>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <dialog id="item-dialog">
+      <form id="item-form" method="dialog">
+        <h2 id="form-title">Add Item</h2>
+        <input type="hidden" id="item-id" />
+
+        <label>Name* <input id="name" required maxlength="100" /></label>
+        <label>Category* <select id="category" required></select></label>
+        <label>Quantity* <input id="quantity" type="number" min="0" step="0.1" required /></label>
+        <label>Unit <input id="unit" value="bottle" maxlength="30" /></label>
+        <label>Status* <select id="status" required></select></label>
+        <label>Par Level <input id="par_level" type="number" min="0" step="0.1" value="0" /></label>
+        <label>Notes <textarea id="notes" rows="3"></textarea></label>
+
+        <p id="form-error" class="form-error"></p>
+
+        <menu>
+          <button type="button" id="delete-btn" class="btn danger hidden">Delete</button>
+          <button type="button" id="cancel-btn" class="btn">Cancel</button>
+          <button type="submit" class="btn primary">Save</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <dialog id="history-dialog">
+      <h2>Item History</h2>
+      <ul id="history-list"></ul>
+      <button id="history-close" class="btn">Close</button>
+    </dialog>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
