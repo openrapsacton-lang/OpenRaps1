@@ -11,6 +11,35 @@ body {
   padding: 1rem;
 }
 
+
+.top-bar-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #f3f4f6;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: padding 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.top-bar-wrap.is-sticky {
+  padding-bottom: 0.25rem;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+.undo-redo-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -77,6 +106,11 @@ th, td {
   padding: 0.45rem 0.8rem;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .btn.primary {
@@ -190,5 +224,11 @@ menu {
 
   .page-header .btn {
     width: 100%;
+  }
+
+  .header-actions,
+  .undo-redo-actions {
+    width: 100%;
+    align-items: stretch;
   }
 }
