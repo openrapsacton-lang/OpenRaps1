@@ -1,5 +1,5 @@
 const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'NA', 'Other'];
-const STATUSES = ['FULL', 'LOW', 'ORDERED', 'IN_TRANSIT', 'DISCONTINUED'];
+const STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
 
 const state = {
   items: [],
@@ -84,6 +84,7 @@ function buildQuery() {
 
 async function loadItems() {
   setLoading(true);
+  closeAllActionMenus();
   try {
     state.items = await api(`/api/items?${buildQuery()}`);
     renderTable();
@@ -105,29 +106,46 @@ function renderTable() {
     tr.innerHTML = `
       <td>${item.name}</td>
       <td>${item.category}</td>
-      <td>${item.quantity}</td>
       <td>${item.unit}</td>
+      <td>${item.quantity}</td>
       <td>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </td>
-      <td>${item.par_level}</td>
       <td>${toLocalDate(item.updated_at)}</td>
       <td>
-        <div class="row-actions">
-          <button class="btn" data-action="minus" data-id="${item.id}">-1</button>
-          <button class="btn" data-action="plus" data-id="${item.id}">+1</button>
-          <button class="btn" data-action="mark-low" data-id="${item.id}">Mark Low</button>
-          <button class="btn" data-action="edit" data-id="${item.id}">Edit</button>
-          <button class="btn" data-action="history" data-id="${item.id}">History</button>
-          <select data-action="status" data-id="${item.id}">
-            ${STATUSES.map((s) => `<option value="${s}" ${s === item.status ? 'selected' : ''}>${s}</option>`).join('')}
-          </select>
+        <div class="actions-wrap" data-action-wrap>
+          <button class="btn" data-action="toggle-menu" data-id="${item.id}">Actions ▾</button>
+          <div class="actions-menu hidden" data-menu-id="${item.id}">
+            <button class="btn" data-action="minus" data-id="${item.id}">-1</button>
+            <button class="btn" data-action="plus" data-id="${item.id}">+1</button>
+            <button class="btn" data-action="plus10" data-id="${item.id}">+10</button>
+            <button class="btn" data-action="mark-low" data-id="${item.id}">Mark Low</button>
+            <button class="btn" data-action="mark-full" data-id="${item.id}">Mark Full</button>
+            <button class="btn" data-action="mark-out" data-id="${item.id}">Mark OUT</button>
+            <button class="btn" data-action="edit" data-id="${item.id}">Edit</button>
+            <button class="btn" data-action="history" data-id="${item.id}">History</button>
+            <select data-action="status" data-id="${item.id}">
+              ${STATUSES.map((s) => `<option value="${s}" ${s === item.status ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+          </div>
         </div>
       </td>
     `;
 
     tbody.appendChild(tr);
   }
+}
+
+function closeAllActionMenus() {
+  document.querySelectorAll('.actions-menu').forEach((menu) => menu.classList.add('hidden'));
+}
+
+function toggleMenuForRow(id) {
+  const target = document.querySelector(`.actions-menu[data-menu-id="${id}"]`);
+  if (!target) return;
+  const isHidden = target.classList.contains('hidden');
+  closeAllActionMenus();
+  if (isHidden) target.classList.remove('hidden');
 }
 
 function resetForm() {
@@ -218,7 +236,15 @@ async function handleDeleteCurrentItem() {
 async function handleRowAction(event) {
   const action = event.target.dataset.action;
   const id = event.target.dataset.id;
-  if (!action || !id) return;
+  if (!action) return;
+
+  if (action === 'toggle-menu') {
+    event.stopPropagation();
+    toggleMenuForRow(id);
+    return;
+  }
+
+  if (!id) return;
 
   const item = state.items.find((i) => i.id === Number(id));
   if (!item) return;
@@ -232,20 +258,46 @@ async function handleRowAction(event) {
       showToast('Quantity updated.');
     }
 
-    if (action === 'mark-low') {
+    if (action === 'plus10') {
+      await api(`/api/items/${id}/quantity`, {
+        method: 'PATCH',
+        body: JSON.stringify({ delta: 10 })
+      });
+      showToast('Quantity increased by 10.');
+    }
+
+    if (action === 'mark-low' || action === 'mark-full') {
+      const status = action === 'mark-low' ? 'LOW' : 'FULL';
       await api(`/api/items/${id}/status`, {
         method: 'PATCH',
-        body: JSON.stringify({ status: 'LOW' })
+        body: JSON.stringify({ status })
       });
-      showToast('Status updated to LOW.');
+      showToast(`Status updated to ${status}.`);
+    }
+
+    if (action === 'mark-out') {
+      if (item.quantity > 0) {
+        await api(`/api/items/${id}/quantity`, {
+          method: 'PATCH',
+          body: JSON.stringify({ quantity: 0 })
+        });
+      } else {
+        await api(`/api/items/${id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'OUT' })
+        });
+      }
+      showToast('Item marked OUT.');
     }
 
     if (action === 'edit') {
+      closeAllActionMenus();
       openEditModal(item);
       return;
     }
 
     if (action === 'history') {
+      closeAllActionMenus();
       await openHistory(id);
       return;
     }
@@ -342,6 +394,12 @@ function init() {
   $('#items-table tbody').addEventListener('click', handleRowAction);
   $('#items-table tbody').addEventListener('change', handleStatusInlineChange);
   $('#history-close').addEventListener('click', () => historyDialog.close());
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-action-wrap]')) {
+      closeAllActionMenus();
+    }
+  });
 
   loadItems();
 }

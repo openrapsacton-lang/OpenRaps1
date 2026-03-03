@@ -62,7 +62,7 @@ input, select, textarea {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
+  min-width: 800px;
 }
 
 th, td {
@@ -91,12 +91,6 @@ th, td {
   border-color: #dc2626;
 }
 
-.row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
 .status-pill {
   display: inline-block;
   padding: 0.15rem 0.45rem;
@@ -108,8 +102,8 @@ th, td {
 
 .status-LOW { background: #fecaca; color: #7f1d1d; }
 .status-FULL { background: #bbf7d0; color: #14532d; }
-.status-ORDERED,
-.status-IN_TRANSIT { background: #fde68a; color: #78350f; }
+.status-ORDERED { background: #fde68a; color: #78350f; }
+.status-OUT { background: #fca5a5; color: #7f1d1d; }
 .status-DISCONTINUED { background: #ddd6fe; color: #4c1d95; }
 
 .hidden { display: none !important; }
@@ -157,6 +151,35 @@ menu {
   max-height: 300px;
   overflow-y: auto;
   padding-left: 1rem;
+}
+
+.actions-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.actions-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 170px;
+  z-index: 10;
+  padding: 0.4rem;
+}
+
+.actions-menu .btn,
+.actions-menu select {
+  width: 100%;
+  margin-bottom: 0.3rem;
+}
+
+.actions-menu .btn:last-child,
+.actions-menu select:last-child {
+  margin-bottom: 0;
 }
 
 @media (max-width: 640px) {

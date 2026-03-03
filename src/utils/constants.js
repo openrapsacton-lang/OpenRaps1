@@ -11,7 +11,7 @@ const VALID_CATEGORIES = [
   'Other'
 ];
 
-const VALID_STATUSES = ['FULL', 'LOW', 'ORDERED', 'IN_TRANSIT', 'DISCONTINUED'];
+const VALID_STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
 
 module.exports = {
   VALID_CATEGORIES,
