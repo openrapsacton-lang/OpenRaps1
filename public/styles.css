@@ -100,10 +100,10 @@ th, td {
   background: #e5e7eb;
 }
 
-.status-LOW { background: #fecaca; color: #7f1d1d; }
-.status-FULL { background: #bbf7d0; color: #14532d; }
-.status-ORDERED { background: #fde68a; color: #78350f; }
-.status-OUT { background: #fca5a5; color: #7f1d1d; }
+.status-LOW { background: #fdc03d; color: #000000; }
+.status-FULL { background: #6df39c; color: #14532d; }
+.status-ORDERED { background: #07b6b6; color: #ffffff; }
+.status-OUT { background: #ff4949; color: #000000; }
 .status-DISCONTINUED { background: #ddd6fe; color: #4c1d95; }
 
 .hidden { display: none !important; }

@@ -9,7 +9,7 @@
   <body>
     <header class="page-header">
       <div>
-        <h1>Bar Inventory</h1>
+        <h1>Acton Bar Inventory</h1>
         <p>Track bottles, quantities, and stock status.</p>
       </div>
       <button id="add-item-btn" class="btn primary">+ Add Item</button>
@@ -35,10 +35,10 @@
         <label>
           Sort
           <select id="sort-field">
-            <option value="updated_at">Updated At</option>
+            <option value="status">Status</option>
             <option value="name">Name</option>
             <option value="category">Category</option>
-            <option value="status">Status</option>
+            <option value="updated_at">Updated At</option>
           </select>
         </label>
 
@@ -88,7 +88,7 @@
 
         <label>Name* <input id="name" required maxlength="100" /></label>
         <label>Category* <select id="category" required></select></label>
-        <label>Quantity* <input id="quantity" type="number" min="0" step="0.1" required /></label>
+        <label>Quantity* <input id="quantity" type="number" min="0" step="1" required /></label>
         <label>Unit <input id="unit" value="bottle" maxlength="30" /></label>
         <label>Status* <select id="status" required></select></label>
         <label>Par Level <input id="par_level" type="number" min="0" step="0.1" value="0" /></label>

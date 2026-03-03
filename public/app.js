@@ -41,7 +41,7 @@ function showToast(message, isError = false) {
   toast.textContent = message;
   toast.style.background = isError ? '#b91c1c' : '#111827';
   toast.classList.remove('hidden');
-  setTimeout(() => toast.classList.add('hidden'), 2200);
+  setTimeout(() => toast.classList.add('hidden'), 5500);
 }
 
 function setLoading(isLoading) {
@@ -113,9 +113,7 @@ function renderTable() {
       </td>
       <td>${toLocalDate(item.updated_at)}</td>
       <td>
-        <div class="actions-wrap" data-action-wrap>
-          <button class="btn" data-action="toggle-menu" data-id="${item.id}">Actions ▾</button>
-          <div class="actions-menu hidden" data-menu-id="${item.id}">
+        <div class="row-actions">
             <button class="btn" data-action="minus" data-id="${item.id}">-1</button>
             <button class="btn" data-action="plus" data-id="${item.id}">+1</button>
             <button class="btn" data-action="plus10" data-id="${item.id}">+10</button>
@@ -127,7 +125,6 @@ function renderTable() {
             <select data-action="status" data-id="${item.id}">
               ${STATUSES.map((s) => `<option value="${s}" ${s === item.status ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
-          </div>
         </div>
       </td>
     `;
