@@ -40,6 +40,13 @@ body {
   gap: 0.5rem;
 }
 
+.export-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -140,6 +147,44 @@ th, td {
 .status-OUT { background: #ff4949; color: #000000; }
 .status-DISCONTINUED { background: #ddd6fe; color: #4c1d95; }
 
+
+#items-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+#items-table tbody tr:hover {
+  background-color: rgba(148, 163, 184, 0.12);
+}
+
+#items-table tbody tr.row-out {
+  background-color: #fee2e2;
+}
+
+#items-table tbody tr.row-out:hover {
+  background-color: #fecaca;
+}
+
+#items-table tbody tr.row-low {
+  background-color: #fef3c7;
+}
+
+#items-table tbody tr.row-low:hover {
+  background-color: #fde68a;
+}
+
+#items-table tbody tr.row-discontinued {
+  color: #6b7280;
+  background-color: #f8fafc;
+}
+
+#items-table tbody tr.row-discontinued:hover {
+  background-color: #f1f5f9;
+}
+
+#items-table tbody tr.row-discontinued .status-pill {
+  opacity: 0.95;
+}
+
 .hidden { display: none !important; }
 
 dialog {
@@ -227,7 +272,8 @@ menu {
   }
 
   .header-actions,
-  .undo-redo-actions {
+  .undo-redo-actions,
+  .export-actions {
     width: 100%;
     align-items: stretch;
   }

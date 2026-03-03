@@ -98,6 +98,13 @@ async function loadItems() {
   }
 }
 
+function getRowClassForStatus(status) {
+  if (status === 'OUT') return 'row-out';
+  if (status === 'LOW') return 'row-low';
+  if (status === 'DISCONTINUED') return 'row-discontinued';
+  return '';
+}
+
 function renderTable() {
   const tbody = $('#items-table tbody');
   tbody.innerHTML = '';
@@ -106,6 +113,8 @@ function renderTable() {
 
   for (const item of state.items) {
     const tr = document.createElement('tr');
+    const rowClass = getRowClassForStatus(item.status);
+    if (rowClass) tr.classList.add(rowClass);
     tr.innerHTML = `
       <td>${item.name}</td>
       <td>
@@ -517,6 +526,99 @@ async function openHistory(itemId) {
   }
 }
 
+
+function csvValue(value) {
+  if (value === null || value === undefined) return '';
+  const stringValue = String(value);
+  if (/[",\n]/.test(stringValue)) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+  return stringValue;
+}
+
+function createCsvContent(rows, columns) {
+  const header = columns.join(',');
+  const lines = rows.map((row) => columns.map((column) => csvValue(row[column])).join(','));
+  return [header, ...lines].join('\n');
+}
+
+function dateStamp() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function downloadCsv(filename, csvContent) {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportFullInventoryCsv() {
+  const columns = ['name', 'category', 'unit', 'quantity', 'status', 'par_level', 'notes', 'updated_at'];
+  const rows = state.items.map((item) => ({
+    name: item.name,
+    category: item.category,
+    unit: item.unit,
+    quantity: item.quantity,
+    status: item.status,
+    par_level: item.par_level,
+    notes: item.notes || '',
+    updated_at: item.updated_at || ''
+  }));
+
+  const csvContent = createCsvContent(rows, columns);
+  downloadCsv(`bar_inventory_full_${dateStamp()}.csv`, csvContent);
+  showToast(`Exported ${rows.length} item(s) to CSV.`);
+}
+
+function matchesOrderListFilters(item) {
+  if (!['OUT', 'LOW'].includes(item.status)) return false;
+
+  const search = state.filters.search.toLowerCase();
+  const matchesSearch = !search
+    || item.name.toLowerCase().includes(search)
+    || (item.notes || '').toLowerCase().includes(search);
+  const matchesCategory = !state.filters.category || item.category === state.filters.category;
+
+  return matchesSearch && matchesCategory;
+}
+
+async function exportOrderListCsv() {
+  setLoading(true);
+  try {
+    const params = new URLSearchParams();
+    if (state.filters.search) params.set('search', state.filters.search);
+    if (state.filters.category) params.set('category', state.filters.category);
+
+    const items = await api(`/api/items?${params.toString()}`);
+    const rows = items
+      .filter(matchesOrderListFilters)
+      .map((item) => ({
+        name: item.name,
+        category: item.category,
+        unit: item.unit,
+        quantity: item.quantity,
+        par_level: item.par_level,
+        status: item.status,
+        notes: item.notes || ''
+      }));
+
+    const columns = ['name', 'category', 'unit', 'quantity', 'par_level', 'status', 'notes'];
+    const csvContent = createCsvContent(rows, columns);
+    downloadCsv(`bar_inventory_order_${dateStamp()}.csv`, csvContent);
+    showToast(`Exported ${rows.length} order-list item(s) to CSV.`);
+  } catch (err) {
+    showToast(err.message, true);
+  } finally {
+    setLoading(false);
+  }
+}
+
 function wireUpFilters() {
   $('#search-input').addEventListener('input', (e) => {
     state.filters.search = e.target.value.trim();
@@ -561,6 +663,8 @@ function init() {
   $('#add-item-btn').addEventListener('click', openCreateModal);
   $('#undo-btn').addEventListener('click', handleUndo);
   $('#redo-btn').addEventListener('click', handleRedo);
+  $('#export-full-btn').addEventListener('click', exportFullInventoryCsv);
+  $('#export-order-btn').addEventListener('click', exportOrderListCsv);
   itemForm.addEventListener('submit', handleSave);
   $('#cancel-btn').addEventListener('click', () => itemDialog.close());
   $('#delete-btn').addEventListener('click', handleDeleteCurrentItem);
