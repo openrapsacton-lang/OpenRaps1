@@ -18,7 +18,7 @@ Open: `http://localhost:3000`
 
 ## What the app includes
 
-- Inventory table with search, category/status filters, sort, and low-stock toggle.
+- Inventory table with search, category/status filters, and sorting.
 - Add/Edit/Delete item form.
 - Quick row actions: `+1`, `-1`, inline status update, and “Mark Low”.
 - Server-side validation and friendly API errors.
@@ -28,7 +28,7 @@ Open: `http://localhost:3000`
 ## API Endpoints
 
 - `GET /api/health`
-- `GET /api/items?search=&category=&status=&sort=&order=&lowStock=`
+- `GET /api/items?search=&category=&status=&sort=&order=`
 - `GET /api/items/:id`
 - `POST /api/items`
 - `PUT /api/items/:id`

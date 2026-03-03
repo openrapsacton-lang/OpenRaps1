@@ -25,7 +25,7 @@ function calculateAutoStatus(currentStatus, quantity, parLevel) {
   return 'FULL';
 }
 
-function listItems({ search, category, status, sort = 'updated_at', order = 'desc', lowStock = false }) {
+function listItems({ search, category, status, sort = 'status', order = 'desc' }) {
   const where = [];
   const params = [];
 
@@ -44,18 +44,28 @@ function listItems({ search, category, status, sort = 'updated_at', order = 'des
     params.push(status);
   }
 
-  if (lowStock) {
-    where.push('(quantity < par_level OR status = "LOW")');
-  }
 
-  const sortColumn = ALLOWED_SORT_FIELDS[sort] || 'updated_at';
+  const sortColumn = ALLOWED_SORT_FIELDS[sort] || 'status';
   const sortOrder = String(order).toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+
+  const statusRank = `CASE status
+    WHEN 'OUT' THEN 1
+    WHEN 'LOW' THEN 2
+    WHEN 'ORDERED' THEN 3
+    WHEN 'FULL' THEN 4
+    WHEN 'DISCONTINUED' THEN 5
+    ELSE 6
+  END`;
+
+  const isStatusSort = sortColumn === 'status';
+  const primarySort = isStatusSort ? statusRank : sortColumn;
+  const primaryOrder = isStatusSort && sortOrder === 'DESC' ? 'ASC' : sortOrder;
 
   const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
   const query = `
     SELECT * FROM items
     ${whereSql}
-    ORDER BY ${sortColumn} ${sortOrder}
+    ORDER BY ${primarySort} ${primaryOrder}, LOWER(name) ASC, id ASC
   `;
 
   return db.prepare(query).all(...params);
