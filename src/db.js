@@ -47,6 +47,13 @@ function initDb() {
     CREATE INDEX IF NOT EXISTS idx_items_updated_at ON items (updated_at);
   `);
 
+  db.prepare(`
+    UPDATE items
+    SET status = 'ORDERED',
+        updated_at = datetime('now')
+    WHERE status = 'IN_TRANSIT'
+  `).run();
+
   const count = db.prepare('SELECT COUNT(*) AS count FROM items').get().count;
   if (count === 0) {
     const insertItem = db.prepare(`

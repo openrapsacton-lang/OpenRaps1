@@ -32,8 +32,7 @@ router.get('/', (req, res) => {
     category: req.query.category,
     status: req.query.status,
     sort: req.query.sort,
-    order: req.query.order,
-    lowStock: req.query.lowStock === 'true'
+    order: req.query.order
   });
   res.json(items);
 });

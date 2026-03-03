@@ -7,9 +7,8 @@ const state = {
     search: '',
     category: '',
     status: '',
-    sort: 'updated_at',
-    order: 'desc',
-    lowStock: false
+    sort: 'status',
+    order: 'desc'
   }
 };
 
@@ -105,13 +104,10 @@ function renderTable() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${item.name}</td>
-      <td>${item.category}</td>
-      <td>${item.unit}</td>
-      <td>${item.quantity}</td>
       <td>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </td>
-      <td>${toLocalDate(item.updated_at)}</td>
+      <td>${item.quantity}</td>
       <td>
         <div class="row-actions">
             <button class="btn" data-action="minus" data-id="${item.id}">-1</button>
@@ -233,7 +229,7 @@ async function handleDeleteCurrentItem() {
 async function handleRowAction(event) {
   const action = event.target.dataset.action;
   const id = event.target.dataset.id;
-  if (!action) return;
+  if (!action || action === 'status') return;
 
   if (action === 'toggle-menu') {
     event.stopPropagation();
@@ -370,10 +366,6 @@ function wireUpFilters() {
     loadItems();
   });
 
-  $('#low-stock-toggle').addEventListener('change', (e) => {
-    state.filters.lowStock = e.target.checked;
-    loadItems();
-  });
 }
 
 function init() {
@@ -381,6 +373,9 @@ function init() {
   fillSelect($('#status-filter'), STATUSES, true);
   fillSelect($('#category'), CATEGORIES, false);
   fillSelect($('#status'), STATUSES, false);
+
+  $('#sort-field').value = state.filters.sort;
+  $('#sort-order').value = state.filters.order;
 
   wireUpFilters();
 
@@ -390,13 +385,12 @@ function init() {
   $('#delete-btn').addEventListener('click', handleDeleteCurrentItem);
   $('#items-table tbody').addEventListener('click', handleRowAction);
   $('#items-table tbody').addEventListener('change', handleStatusInlineChange);
-  $('#history-close').addEventListener('click', () => historyDialog.close());
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('[data-action-wrap]')) {
-      closeAllActionMenus();
+  $('#items-table tbody').addEventListener('mousedown', (event) => {
+    if (event.target.closest('select, button, input, a, .row-actions')) {
+      event.stopPropagation();
     }
   });
+  $('#history-close').addEventListener('click', () => historyDialog.close());
 
   loadItems();
 }
