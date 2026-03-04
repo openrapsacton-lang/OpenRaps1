@@ -138,6 +138,7 @@ function highlightName(name, search) {
 
 function renderTable() {
   const tbody = $('#items-table tbody');
+  const mobileList = $('#mobile-quick-list');
   tbody.innerHTML = '';
   mobileQuickList.innerHTML = '';
 
