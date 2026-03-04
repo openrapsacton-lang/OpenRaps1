@@ -19,6 +19,7 @@ const itemForm = $('#item-form');
 const historyDialog = $('#history-dialog');
 const topBar = $('#top-bar');
 const searchInput = $('#search-input');
+const mobileQuickList = $('#mobile-quick-list');
 const undoStack = [];
 const redoStack = [];
 
@@ -106,11 +107,40 @@ function getRowClassForStatus(status) {
   return '';
 }
 
+function getQuickCardStatusClass(status) {
+  if (status === 'OUT') return 'quick-card--out';
+  if (status === 'LOW') return 'quick-card--low';
+  if (status === 'DISCONTINUED') return 'quick-card--discontinued';
+  return '';
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\$&');
+}
+
+function highlightName(name, search) {
+  const safeName = escapeHtml(name);
+  const query = (search || '').trim();
+  if (!query) return safeName;
+
+  const regex = new RegExp(`(${escapeRegExp(query)})`, 'ig');
+  return safeName.replace(regex, '<mark>$1</mark>');
+}
+
 function renderTable() {
   const tbody = $('#items-table tbody');
   const mobileList = $('#mobile-quick-list');
   tbody.innerHTML = '';
-  mobileList.innerHTML = '';
+  mobileQuickList.innerHTML = '';
 
   $('#empty-state').classList.toggle('hidden', state.items.length > 0);
 
@@ -145,38 +175,48 @@ function renderTable() {
     tbody.appendChild(tr);
 
     const card = document.createElement('article');
-    card.className = `quick-card ${rowClass}`.trim();
+    const statusClass = getQuickCardStatusClass(item.status);
+    card.className = `quick-card ${statusClass}`.trim();
     card.dataset.itemId = String(item.id);
     card.innerHTML = `
       <div class="quick-card-head">
-        <h3>${item.name}</h3>
+        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}</h3>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </div>
-      <p class="quick-quantity">Qty: <strong>${item.quantity}</strong></p>
+      <p class="quick-quantity" aria-label="Quantity ${item.quantity}">${item.quantity}</p>
       <div class="quick-actions">
         <button class="btn quick-btn" data-action="minus" data-id="${item.id}">-1</button>
+        <button class="btn quick-btn" data-action="plus" data-id="${item.id}">+1</button>
+        <button class="btn quick-btn" data-action="plus10" data-id="${item.id}">+10</button>
         <button class="btn quick-btn" data-action="mark-low" data-id="${item.id}">LOW</button>
         <button class="btn quick-btn" data-action="mark-out" data-id="${item.id}">OUT</button>
       </div>
     `;
-    mobileList.appendChild(card);
+    mobileQuickList.appendChild(card);
   }
 }
 
 function isMobileQuickMode() {
-  return window.matchMedia('(max-width: 768px) and (orientation: portrait)').matches;
+  return window.matchMedia('(max-width: 900px)').matches;
+}
+
+function isMobilePortraitMode() {
+  return window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
 }
 
 function syncResponsiveMode() {
   document.body.classList.toggle('mobile-quick-mode', isMobileQuickMode());
+  document.body.classList.toggle('mobile-portrait-mode', isMobilePortraitMode());
 }
 
 function focusSearchForMobileQuickMode() {
-  if (!isMobileQuickMode()) return;
+  if (!isMobilePortraitMode()) return;
   requestAnimationFrame(() => {
     searchInput.focus({ preventScroll: true });
   });
 }
+
+
 
 function flashItemFeedback(id) {
   const selector = `[data-item-id="${id}"]`;
@@ -380,11 +420,79 @@ function wireKeyboardShortcuts() {
 
 function wireStickyTopBar() {
   function updateStickyState() {
+    if (isMobileQuickMode()) {
+      topBar.classList.remove('is-sticky');
+      return;
+    }
     topBar.classList.toggle('is-sticky', window.scrollY > 8);
   }
 
   window.addEventListener('scroll', updateStickyState, { passive: true });
+  window.addEventListener('resize', updateStickyState, { passive: true });
   updateStickyState();
+}
+
+
+function wireMobileLongPressEdit() {
+  let timer = null;
+  let startX = 0;
+  let startY = 0;
+  let targetItemId = null;
+  const movementThreshold = 12;
+  const longPressDelayMs = 520;
+
+  function clearTimer() {
+    if (!timer) return;
+    clearTimeout(timer);
+    timer = null;
+    targetItemId = null;
+  }
+
+  function startPress(event) {
+    if (!isMobileQuickMode()) return;
+    if (event.target.closest('button, select, input, a')) return;
+
+    const card = event.target.closest('.quick-card');
+    if (!card) return;
+
+    startX = event.clientX ?? 0;
+    startY = event.clientY ?? 0;
+    clearTimer();
+    targetItemId = Number(card.dataset.itemId);
+
+    timer = setTimeout(() => {
+      const item = getItemById(targetItemId);
+      if (item) {
+        showToast(`Editing ${item.name}`);
+        openEditModal(item);
+      }
+      clearTimer();
+    }, longPressDelayMs);
+  }
+
+  function movePress(event) {
+    if (!timer) return;
+    const currentX = event.clientX ?? startX;
+    const currentY = event.clientY ?? startY;
+    const movedX = Math.abs(currentX - startX);
+    const movedY = Math.abs(currentY - startY);
+    if (movedX > movementThreshold || movedY > movementThreshold) {
+      clearTimer();
+    }
+  }
+
+  mobileQuickList.addEventListener('pointerdown', startPress, { passive: true });
+  mobileQuickList.addEventListener('pointermove', movePress, { passive: true });
+  mobileQuickList.addEventListener('pointerup', clearTimer, { passive: true });
+  mobileQuickList.addEventListener('pointercancel', clearTimer, { passive: true });
+  mobileQuickList.addEventListener('scroll', clearTimer, { passive: true });
+  window.addEventListener('scroll', clearTimer, { passive: true });
+
+  mobileQuickList.addEventListener('click', (event) => {
+    if (event.target.closest('button, select, input, a')) {
+      clearTimer();
+    }
+  });
 }
 
 async function handleSave(event) {
@@ -717,6 +825,7 @@ function init() {
   wireUpFilters();
   wireKeyboardShortcuts();
   wireStickyTopBar();
+  wireMobileLongPressEdit();
 
   $('#add-item-btn').addEventListener('click', openCreateModal);
   $('#undo-btn').addEventListener('click', handleUndo);
