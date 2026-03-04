@@ -27,10 +27,12 @@
       </header>
 
       <section class="controls card">
-        <label>
-          Search
-          <input id="search-input" type="text" placeholder="Search by name" />
-        </label>
+        <div id="mobile-search-bar" class="mobile-search-bar">
+          <label>
+            Search
+            <input id="search-input" type="text" placeholder="Search by name" />
+          </label>
+        </div>
 
         <label>
           Category
@@ -64,7 +66,7 @@
 
     <main>
 
-      <section class="card">
+      <section class="card desktop-table-card">
         <div class="table-wrap">
           <table id="items-table">
             <thead>
@@ -79,6 +81,8 @@
           </table>
         </div>
       </section>
+
+      <section id="mobile-quick-list" class="mobile-quick-list" aria-label="Quick inventory actions"></section>
 
       <p id="empty-state" class="hidden">No items found. Try changing your filters.</p>
       <p id="loading-indicator" class="hidden">Loading...</p>

@@ -18,6 +18,8 @@ const itemDialog = $('#item-dialog');
 const itemForm = $('#item-form');
 const historyDialog = $('#history-dialog');
 const topBar = $('#top-bar');
+const searchInput = $('#search-input');
+const mobileQuickList = $('#mobile-quick-list');
 const undoStack = [];
 const redoStack = [];
 
@@ -105,15 +107,47 @@ function getRowClassForStatus(status) {
   return '';
 }
 
+function getQuickCardStatusClass(status) {
+  if (status === 'OUT') return 'quick-card--out';
+  if (status === 'LOW') return 'quick-card--low';
+  if (status === 'DISCONTINUED') return 'quick-card--discontinued';
+  return '';
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\$&');
+}
+
+function highlightName(name, search) {
+  const safeName = escapeHtml(name);
+  const query = (search || '').trim();
+  if (!query) return safeName;
+
+  const regex = new RegExp(`(${escapeRegExp(query)})`, 'ig');
+  return safeName.replace(regex, '<mark>$1</mark>');
+}
+
 function renderTable() {
   const tbody = $('#items-table tbody');
   tbody.innerHTML = '';
+  mobileQuickList.innerHTML = '';
 
   $('#empty-state').classList.toggle('hidden', state.items.length > 0);
 
   for (const item of state.items) {
-    const tr = document.createElement('tr');
     const rowClass = getRowClassForStatus(item.status);
+
+    const tr = document.createElement('tr');
+    tr.dataset.itemId = String(item.id);
     if (rowClass) tr.classList.add(rowClass);
     tr.innerHTML = `
       <td>${item.name}</td>
@@ -137,10 +171,67 @@ function renderTable() {
         </div>
       </td>
     `;
-
     tbody.appendChild(tr);
+
+    const card = document.createElement('article');
+    const statusClass = getQuickCardStatusClass(item.status);
+    card.className = `quick-card ${statusClass}`.trim();
+    card.dataset.itemId = String(item.id);
+    card.innerHTML = `
+      <div class="quick-card-head">
+        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}</h3>
+        <span class="status-pill status-${item.status}">${item.status}</span>
+      </div>
+      <p class="quick-quantity" aria-label="Quantity ${item.quantity}">${item.quantity}</p>
+      <div class="quick-actions">
+        <button class="btn quick-btn" data-action="minus" data-id="${item.id}">-1</button>
+        <button class="btn quick-btn" data-action="plus" data-id="${item.id}">+1</button>
+        <button class="btn quick-btn" data-action="plus10" data-id="${item.id}">+10</button>
+        <button class="btn quick-btn" data-action="mark-low" data-id="${item.id}">LOW</button>
+        <button class="btn quick-btn" data-action="mark-out" data-id="${item.id}">OUT</button>
+      </div>
+    `;
+    mobileQuickList.appendChild(card);
   }
 }
+
+function isMobileQuickMode() {
+  return window.matchMedia('(max-width: 900px)').matches;
+}
+
+function isMobilePortraitMode() {
+  return window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+}
+
+function syncResponsiveMode() {
+  document.body.classList.toggle('mobile-quick-mode', isMobileQuickMode());
+  document.body.classList.toggle('mobile-portrait-mode', isMobilePortraitMode());
+}
+
+function focusSearchForMobileQuickMode() {
+  if (!isMobilePortraitMode()) return;
+  requestAnimationFrame(() => {
+    searchInput.focus({ preventScroll: true });
+  });
+}
+
+
+
+function flashItemFeedback(id) {
+  const selector = `[data-item-id="${id}"]`;
+  document.querySelectorAll(selector).forEach((el) => {
+    el.classList.remove('action-flash');
+    void el.offsetWidth;
+    el.classList.add('action-flash');
+  });
+}
+
+function updateItemInState(updatedItem) {
+  const idx = state.items.findIndex((item) => item.id === updatedItem.id);
+  if (idx === -1) return;
+  state.items[idx] = updatedItem;
+}
+
 
 function closeAllActionMenus() {
   document.querySelectorAll('.actions-menu').forEach((menu) => menu.classList.add('hidden'));
@@ -328,11 +419,79 @@ function wireKeyboardShortcuts() {
 
 function wireStickyTopBar() {
   function updateStickyState() {
+    if (isMobileQuickMode()) {
+      topBar.classList.remove('is-sticky');
+      return;
+    }
     topBar.classList.toggle('is-sticky', window.scrollY > 8);
   }
 
   window.addEventListener('scroll', updateStickyState, { passive: true });
+  window.addEventListener('resize', updateStickyState, { passive: true });
   updateStickyState();
+}
+
+
+function wireMobileLongPressEdit() {
+  let timer = null;
+  let startX = 0;
+  let startY = 0;
+  let targetItemId = null;
+  const movementThreshold = 12;
+  const longPressDelayMs = 520;
+
+  function clearTimer() {
+    if (!timer) return;
+    clearTimeout(timer);
+    timer = null;
+    targetItemId = null;
+  }
+
+  function startPress(event) {
+    if (!isMobileQuickMode()) return;
+    if (event.target.closest('button, select, input, a')) return;
+
+    const card = event.target.closest('.quick-card');
+    if (!card) return;
+
+    startX = event.clientX ?? 0;
+    startY = event.clientY ?? 0;
+    clearTimer();
+    targetItemId = Number(card.dataset.itemId);
+
+    timer = setTimeout(() => {
+      const item = getItemById(targetItemId);
+      if (item) {
+        showToast(`Editing ${item.name}`);
+        openEditModal(item);
+      }
+      clearTimer();
+    }, longPressDelayMs);
+  }
+
+  function movePress(event) {
+    if (!timer) return;
+    const currentX = event.clientX ?? startX;
+    const currentY = event.clientY ?? startY;
+    const movedX = Math.abs(currentX - startX);
+    const movedY = Math.abs(currentY - startY);
+    if (movedX > movementThreshold || movedY > movementThreshold) {
+      clearTimer();
+    }
+  }
+
+  mobileQuickList.addEventListener('pointerdown', startPress, { passive: true });
+  mobileQuickList.addEventListener('pointermove', movePress, { passive: true });
+  mobileQuickList.addEventListener('pointerup', clearTimer, { passive: true });
+  mobileQuickList.addEventListener('pointercancel', clearTimer, { passive: true });
+  mobileQuickList.addEventListener('scroll', clearTimer, { passive: true });
+  window.addEventListener('scroll', clearTimer, { passive: true });
+
+  mobileQuickList.addEventListener('click', (event) => {
+    if (event.target.closest('button, select, input, a')) {
+      clearTimer();
+    }
+  });
 }
 
 async function handleSave(event) {
@@ -418,9 +577,11 @@ async function handleRowAction(event) {
   if (!item) return;
 
   try {
+    let afterSnapshot = null;
+
     if (action === 'plus' || action === 'minus') {
       const beforeSnapshot = cloneItem(item);
-      const afterSnapshot = await api(`/api/items/${id}/quantity`, {
+      afterSnapshot = await api(`/api/items/${id}/quantity`, {
         method: 'PATCH',
         body: JSON.stringify({ delta: action === 'plus' ? 1 : -1 })
       });
@@ -430,7 +591,7 @@ async function handleRowAction(event) {
 
     if (action === 'plus10') {
       const beforeSnapshot = cloneItem(item);
-      const afterSnapshot = await api(`/api/items/${id}/quantity`, {
+      afterSnapshot = await api(`/api/items/${id}/quantity`, {
         method: 'PATCH',
         body: JSON.stringify({ delta: 10 })
       });
@@ -441,7 +602,7 @@ async function handleRowAction(event) {
     if (action === 'mark-low' || action === 'mark-full') {
       const beforeSnapshot = cloneItem(item);
       const status = action === 'mark-low' ? 'LOW' : 'FULL';
-      const afterSnapshot = await api(`/api/items/${id}/status`, {
+      afterSnapshot = await api(`/api/items/${id}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status })
       });
@@ -451,18 +612,14 @@ async function handleRowAction(event) {
 
     if (action === 'mark-out') {
       const beforeSnapshot = cloneItem(item);
-      let afterSnapshot;
-      if (item.quantity > 0) {
-        afterSnapshot = await api(`/api/items/${id}/quantity`, {
-          method: 'PATCH',
-          body: JSON.stringify({ quantity: 0 })
-        });
-      } else {
-        afterSnapshot = await api(`/api/items/${id}/status`, {
-          method: 'PATCH',
-          body: JSON.stringify({ status: 'OUT' })
-        });
-      }
+      await api(`/api/items/${id}/quantity`, {
+        method: 'PATCH',
+        body: JSON.stringify({ quantity: 0 })
+      });
+      afterSnapshot = await api(`/api/items/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'OUT' })
+      });
       pushUndoAction({ type: 'status', beforeSnapshot, afterSnapshot: cloneItem(afterSnapshot) });
       showToast('Item marked OUT.');
     }
@@ -479,11 +636,19 @@ async function handleRowAction(event) {
       return;
     }
 
+    if (afterSnapshot) {
+      updateItemInState(afterSnapshot);
+      renderTable();
+      flashItemFeedback(id);
+      return;
+    }
+
     await loadItems();
   } catch (err) {
     showToast(err.message, true);
   }
 }
+
 
 async function handleStatusInlineChange(event) {
   if (event.target.dataset.action !== 'status') return;
@@ -620,7 +785,7 @@ async function exportOrderListCsv() {
 }
 
 function wireUpFilters() {
-  $('#search-input').addEventListener('input', (e) => {
+  searchInput.addEventListener('input', (e) => {
     state.filters.search = e.target.value.trim();
     loadItems();
   });
@@ -659,6 +824,7 @@ function init() {
   wireUpFilters();
   wireKeyboardShortcuts();
   wireStickyTopBar();
+  wireMobileLongPressEdit();
 
   $('#add-item-btn').addEventListener('click', openCreateModal);
   $('#undo-btn').addEventListener('click', handleUndo);
@@ -669,6 +835,7 @@ function init() {
   $('#cancel-btn').addEventListener('click', () => itemDialog.close());
   $('#delete-btn').addEventListener('click', handleDeleteCurrentItem);
   $('#items-table tbody').addEventListener('click', handleRowAction);
+  $('#mobile-quick-list').addEventListener('click', handleRowAction);
   $('#items-table tbody').addEventListener('change', handleStatusInlineChange);
   $('#items-table tbody').addEventListener('mousedown', (event) => {
     if (event.target.closest('select, button, input, a, .row-actions')) {
@@ -676,6 +843,17 @@ function init() {
     }
   });
   $('#history-close').addEventListener('click', () => historyDialog.close());
+
+  syncResponsiveMode();
+  focusSearchForMobileQuickMode();
+  window.addEventListener('resize', () => {
+    syncResponsiveMode();
+    focusSearchForMobileQuickMode();
+  }, { passive: true });
+  window.addEventListener('orientationchange', () => {
+    syncResponsiveMode();
+    focusSearchForMobileQuickMode();
+  });
 
   updateUndoRedoButtons();
   loadItems();
