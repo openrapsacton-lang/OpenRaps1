@@ -366,6 +366,7 @@ async function loadItems() {
 function getRowClassForStatus(status) {
   if (status === 'OUT') return 'row-out';
   if (status === 'LOW') return 'row-low';
+  if (status === 'ORDERED') return 'row-ordered';
   if (status === 'DISCONTINUED') return 'row-discontinued';
   return '';
 }
