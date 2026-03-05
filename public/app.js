@@ -1,15 +1,45 @@
-const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'NA', 'Other'];
+const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'Syrups+', 'NA', 'Other'];
 const STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
+
+const TAB_KEYS = ['Total Stock', 'Liquor', 'Wine', 'Beer', 'Syrups+'];
+const LIQUOR_CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur'];
+const TAB_STORAGE_KEY = 'barInventoryTabStateV1';
+
+function createDefaultTabState() {
+  return {
+    search: '',
+    status: '',
+    sort: 'status',
+    order: 'desc',
+    category: '',
+    wineType: 'All',
+    beerPackaging: 'All'
+  };
+}
+
+function createDefaultAllTabState() {
+  return {
+    'Total Stock': createDefaultTabState(),
+    Liquor: { ...createDefaultTabState(), category: '' },
+    Wine: { ...createDefaultTabState(), category: 'Wine', wineType: 'All' },
+    Beer: { ...createDefaultTabState(), category: 'Beer', beerPackaging: 'All' },
+    'Syrups+': { ...createDefaultTabState(), category: 'Syrups+' }
+  };
+}
 
 const state = {
   items: [],
+  activeTab: 'Total Stock',
+  tabState: createDefaultAllTabState(),
   filters: {
     search: '',
     category: '',
     status: '',
     sort: 'status',
     order: 'desc'
-  }
+  },
+  wineType: 'All',
+  beerPackaging: 'All'
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -20,6 +50,11 @@ const historyDialog = $('#history-dialog');
 const topBar = $('#top-bar');
 const searchInput = $('#search-input');
 const mobileQuickList = $('#mobile-quick-list');
+const tabButtons = Array.from(document.querySelectorAll('.tab-btn'));
+const wineTypeWrap = $('#wine-type-wrap');
+const wineTypeFilter = $('#wine-type-filter');
+const beerPackagingWrap = $('#beer-packaging-wrap');
+const beerPackagingFilter = $('#beer-packaging-filter');
 const undoStack = [];
 const redoStack = [];
 
@@ -78,20 +113,243 @@ async function api(path, options = {}) {
   return res.json();
 }
 
-function buildQuery() {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(state.filters)) {
-    if (value === '' || value === false) continue;
-    params.set(key, String(value));
+function getCurrentUiState() {
+  return {
+    search: searchInput.value.trim(),
+    category: $('#category-filter').value,
+    status: $('#status-filter').value,
+    sort: $('#sort-field').value,
+    order: $('#sort-order').value,
+    wineType: wineTypeFilter.value,
+    beerPackaging: beerPackagingFilter.value
+  };
+}
+
+function saveCurrentTabState() {
+  state.tabState[state.activeTab] = {
+    ...state.tabState[state.activeTab],
+    ...getCurrentUiState()
+  };
+  persistTabPreferences();
+}
+
+function applyTabConstraints(tab, uiState) {
+  const nextState = { ...uiState };
+
+  if (tab === 'Total Stock') {
+    return nextState;
   }
-  return params.toString();
+
+  if (tab === 'Liquor') {
+    if (nextState.category && !LIQUOR_CATEGORIES.includes(nextState.category)) {
+      nextState.category = '';
+    }
+    return nextState;
+  }
+
+  if (tab === 'Wine') {
+    nextState.category = 'Wine';
+    if (!['All', 'Red', 'White'].includes(nextState.wineType)) {
+      nextState.wineType = 'All';
+    }
+    return nextState;
+  }
+
+  if (tab === 'Beer') {
+    nextState.category = 'Beer';
+    if (!['All', 'Kegs', 'Cans'].includes(nextState.beerPackaging)) {
+      nextState.beerPackaging = 'All';
+    }
+    return nextState;
+  }
+
+  if (tab === 'Syrups+') {
+    nextState.category = 'Syrups+';
+  }
+
+  return nextState;
+}
+
+function syncCategoryFilterForActiveTab(preferredCategory = '') {
+  const categoryFilter = $('#category-filter');
+
+  if (state.activeTab === 'Liquor') {
+    fillSelect(categoryFilter, LIQUOR_CATEGORIES, true);
+    categoryFilter.value = preferredCategory && LIQUOR_CATEGORIES.includes(preferredCategory) ? preferredCategory : '';
+    return;
+  }
+
+  if (state.activeTab === 'Wine') {
+    fillSelect(categoryFilter, ['Wine'], false);
+    categoryFilter.value = 'Wine';
+    return;
+  }
+
+  if (state.activeTab === 'Beer') {
+    fillSelect(categoryFilter, ['Beer'], false);
+    categoryFilter.value = 'Beer';
+    return;
+  }
+
+  if (state.activeTab === 'Syrups+') {
+    fillSelect(categoryFilter, ['Syrups+'], false);
+    categoryFilter.value = 'Syrups+';
+    return;
+  }
+
+  fillSelect(categoryFilter, CATEGORIES, true);
+  categoryFilter.value = preferredCategory && CATEGORIES.includes(preferredCategory) ? preferredCategory : '';
+}
+
+function updateTabSpecificControls() {
+  wineTypeWrap.classList.toggle('hidden', state.activeTab !== 'Wine');
+  beerPackagingWrap.classList.toggle('hidden', state.activeTab !== 'Beer');
+}
+
+function loadTabStateIntoUI(tab) {
+  const savedState = applyTabConstraints(tab, state.tabState[tab] || createDefaultTabState());
+  state.tabState[tab] = savedState;
+
+  searchInput.value = savedState.search || '';
+  $('#status-filter').value = savedState.status || '';
+  $('#sort-field').value = savedState.sort || 'status';
+  $('#sort-order').value = savedState.order || 'desc';
+  wineTypeFilter.value = savedState.wineType || 'All';
+  beerPackagingFilter.value = savedState.beerPackaging || 'All';
+  syncCategoryFilterForActiveTab(savedState.category || '');
+
+  state.filters.search = searchInput.value;
+  state.filters.status = $('#status-filter').value;
+  state.filters.sort = $('#sort-field').value;
+  state.filters.order = $('#sort-order').value;
+  state.filters.category = $('#category-filter').value;
+  state.wineType = wineTypeFilter.value;
+  state.beerPackaging = beerPackagingFilter.value;
+
+  updateTabSpecificControls();
+}
+
+function updateTabButtons() {
+  tabButtons.forEach((btn) => {
+    const isActive = btn.dataset.tab === state.activeTab;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+}
+
+function switchTab(newTab) {
+  if (!TAB_KEYS.includes(newTab) || newTab === state.activeTab) return;
+  saveCurrentTabState();
+  state.activeTab = newTab;
+  loadTabStateIntoUI(newTab);
+  updateTabButtons();
+  persistTabPreferences();
+  loadItems();
+}
+
+function detectBeerPackaging(item) {
+  const value = `${item.unit || ''} ${item.name || ''} ${item.notes || ''}`.toLowerCase();
+  if (/\b(keg|sixtel|half|full)\b/.test(value)) return 'Kegs';
+  if (/\b(can|4pack|4-pack|4pk|case|pack)\b/.test(value)) return 'Cans';
+  return 'Other';
+}
+
+function getBeerPackagingLabel(item) {
+  const packaging = detectBeerPackaging(item);
+  const raw = `${item.unit || ''} ${item.name || ''} ${item.notes || ''}`.toLowerCase();
+  if (packaging === 'Kegs') return 'KEG';
+  if (/\b4pack|4-pack|4pk\b/.test(raw)) return '4PK';
+  if (/\bcase\b/.test(raw)) return 'CASE';
+  if (packaging === 'Cans') return 'CAN';
+  return '';
+}
+
+function matchesWineType(item, wineType) {
+  if (wineType === 'All') return true;
+  const notes = (item.notes || '').toLowerCase();
+  if (!notes.trim()) return false;
+  if (wineType === 'Red') return notes.includes('red');
+  if (wineType === 'White') return notes.includes('white');
+  return true;
+}
+
+function getEffectiveQueryParamsFromUI() {
+  const uiState = applyTabConstraints(state.activeTab, {
+    search: state.filters.search,
+    category: state.filters.category,
+    status: state.filters.status,
+    sort: state.filters.sort,
+    order: state.filters.order,
+    wineType: state.wineType,
+    beerPackaging: state.beerPackaging
+  });
+
+  const params = new URLSearchParams();
+  if (uiState.search) params.set('search', uiState.search);
+  if (uiState.category) params.set('category', uiState.category);
+  if (uiState.status) params.set('status', uiState.status);
+  if (uiState.sort) params.set('sort', uiState.sort);
+  if (uiState.order) params.set('order', uiState.order);
+  return params;
+}
+
+function applyClientFilters(items) {
+  return items.filter((item) => {
+    if (state.activeTab === 'Wine' && !matchesWineType(item, state.wineType)) {
+      return false;
+    }
+
+    if (state.activeTab === 'Beer') {
+      if (state.beerPackaging === 'Kegs' && detectBeerPackaging(item) !== 'Kegs') return false;
+      if (state.beerPackaging === 'Cans' && detectBeerPackaging(item) !== 'Cans') return false;
+    }
+
+    return true;
+  });
+}
+
+function persistTabPreferences() {
+  try {
+    localStorage.setItem(TAB_STORAGE_KEY, JSON.stringify({
+      activeTab: state.activeTab,
+      tabState: state.tabState
+    }));
+  } catch (_e) {
+    // ignore storage issues
+  }
+}
+
+function restoreTabPreferences() {
+  try {
+    const raw = localStorage.getItem(TAB_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed.tabState && typeof parsed.tabState === 'object') {
+      for (const tab of TAB_KEYS) {
+        state.tabState[tab] = applyTabConstraints(tab, {
+          ...createDefaultTabState(),
+          ...(parsed.tabState[tab] || {})
+        });
+      }
+    }
+    if (TAB_KEYS.includes(parsed.activeTab)) {
+      state.activeTab = parsed.activeTab;
+    }
+  } catch (_e) {
+    // ignore storage issues
+  }
+}
+
+function buildQuery() {
+  return getEffectiveQueryParamsFromUI().toString();
 }
 
 async function loadItems() {
   setLoading(true);
   closeAllActionMenus();
   try {
-    state.items = await api(`/api/items?${buildQuery()}`);
+    const items = await api(`/api/items?${buildQuery()}`);
+    state.items = applyClientFilters(items);
     renderTable();
   } catch (err) {
     showToast(err.message, true);
@@ -151,7 +409,7 @@ function renderTable() {
     tr.dataset.itemId = String(item.id);
     if (rowClass) tr.classList.add(rowClass);
     tr.innerHTML = `
-      <td>${item.name}</td>
+      <td>${item.name}${state.activeTab === 'Beer' && getBeerPackagingLabel(item) ? ` <span class="packaging-badge">(${getBeerPackagingLabel(item)})</span>` : ''}</td>
       <td>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </td>
@@ -180,7 +438,7 @@ function renderTable() {
     card.dataset.itemId = String(item.id);
     card.innerHTML = `
       <div class="quick-card-head">
-        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}</h3>
+        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}${state.activeTab === 'Beer' && getBeerPackagingLabel(item) ? ` <span class="packaging-badge">(${getBeerPackagingLabel(item)})</span>` : ''}</h3>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </div>
       <p class="quick-quantity" aria-label="Quantity ${item.quantity}">${item.quantity}</p>
@@ -755,15 +1013,9 @@ function matchesOrderListFilters(item) {
 }
 
 async function exportOrderListCsv() {
-  setLoading(true);
   try {
-    const params = new URLSearchParams();
-    if (state.filters.search) params.set('search', state.filters.search);
-    if (state.filters.category) params.set('category', state.filters.category);
-
-    const items = await api(`/api/items?${params.toString()}`);
-    const rows = items
-      .filter(matchesOrderListFilters)
+    const rows = state.items
+      .filter((item) => ['OUT', 'LOW'].includes(item.status))
       .map((item) => ({
         name: item.name,
         category: item.category,
@@ -780,40 +1032,60 @@ async function exportOrderListCsv() {
     showToast(`Exported ${rows.length} order-list item(s) to CSV.`);
   } catch (err) {
     showToast(err.message, true);
-  } finally {
-    setLoading(false);
   }
 }
 
 function wireUpFilters() {
   searchInput.addEventListener('input', (e) => {
     state.filters.search = e.target.value.trim();
+    saveCurrentTabState();
     loadItems();
   });
 
   $('#category-filter').addEventListener('change', (e) => {
     state.filters.category = e.target.value;
+    saveCurrentTabState();
     loadItems();
   });
 
   $('#status-filter').addEventListener('change', (e) => {
     state.filters.status = e.target.value;
+    saveCurrentTabState();
     loadItems();
   });
 
   $('#sort-field').addEventListener('change', (e) => {
     state.filters.sort = e.target.value;
+    saveCurrentTabState();
     loadItems();
   });
 
   $('#sort-order').addEventListener('change', (e) => {
     state.filters.order = e.target.value;
+    saveCurrentTabState();
     loadItems();
+  });
+
+  wineTypeFilter.addEventListener('change', (e) => {
+    state.wineType = e.target.value;
+    saveCurrentTabState();
+    loadItems();
+  });
+
+  beerPackagingFilter.addEventListener('change', (e) => {
+    state.beerPackaging = e.target.value;
+    saveCurrentTabState();
+    loadItems();
+  });
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
 }
 
 function init() {
+  restoreTabPreferences();
   fillSelect($('#category-filter'), CATEGORIES, true);
   fillSelect($('#status-filter'), STATUSES, true);
   fillSelect($('#category'), CATEGORIES, false);
@@ -821,6 +1093,8 @@ function init() {
 
   $('#sort-field').value = state.filters.sort;
   $('#sort-order').value = state.filters.order;
+  loadTabStateIntoUI(state.activeTab);
+  updateTabButtons();
 
   wireUpFilters();
   wireKeyboardShortcuts();

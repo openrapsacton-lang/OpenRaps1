@@ -7,6 +7,7 @@ const VALID_CATEGORIES = [
   'Liqueur',
   'Wine',
   'Beer',
+  'Syrups+',
   'NA',
   'Other'
 ];
