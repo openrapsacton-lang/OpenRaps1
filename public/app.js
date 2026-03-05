@@ -1,15 +1,33 @@
-const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'NA', 'Other'];
+const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'NA', 'Other', 'Syrups+'];
 const STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
+const TABS = ['Total Stock', 'Liquor', 'Wine', 'Beer', 'Syrups+'];
+const LIQUOR_CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur'];
+const TAB_STORAGE_KEY = 'barInventoryTabViewStateV1';
+
+const defaultTabViewState = () => ({
+  search: '',
+  status: '',
+  sort: 'status',
+  order: 'desc',
+  category: '',
+  wineType: '',
+  beerPackaging: ''
+});
 
 const state = {
+  allItems: [],
   items: [],
   filters: {
     search: '',
     category: '',
     status: '',
     sort: 'status',
-    order: 'desc'
-  }
+    order: 'desc',
+    wineType: '',
+    beerPackaging: ''
+  },
+  activeTab: 'Total Stock',
+  tabState: Object.fromEntries(TABS.map((tab) => [tab, defaultTabViewState()]))
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -23,6 +41,33 @@ const mobileQuickList = $('#mobile-quick-list');
 const undoStack = [];
 const redoStack = [];
 
+function restoreTabState() {
+  try {
+    const raw = localStorage.getItem(TAB_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed.activeTab && TABS.includes(parsed.activeTab)) {
+      state.activeTab = parsed.activeTab;
+    }
+    if (parsed.tabState && typeof parsed.tabState === 'object') {
+      for (const tab of TABS) {
+        state.tabState[tab] = {
+          ...defaultTabViewState(),
+          ...(parsed.tabState[tab] || {})
+        };
+      }
+    }
+  } catch (_err) {
+    // ignore bad localStorage payloads
+  }
+}
+
+function persistTabState() {
+  localStorage.setItem(TAB_STORAGE_KEY, JSON.stringify({
+    activeTab: state.activeTab,
+    tabState: state.tabState
+  }));
+}
 
 function fillSelect(selectEl, values, includeAll = false) {
   selectEl.innerHTML = '';
@@ -38,6 +83,149 @@ function fillSelect(selectEl, values, includeAll = false) {
     option.value = value;
     option.textContent = value;
     selectEl.appendChild(option);
+  }
+}
+
+function applyCategoryOptionsForTab(tabName, desiredValue = '') {
+  const categoryFilter = $('#category-filter');
+  if (tabName === 'Liquor') {
+    fillSelect(categoryFilter, LIQUOR_CATEGORIES, true);
+  } else if (tabName === 'Wine') {
+    fillSelect(categoryFilter, ['Wine'], false);
+  } else if (tabName === 'Beer') {
+    fillSelect(categoryFilter, ['Beer'], false);
+  } else if (tabName === 'Syrups+') {
+    fillSelect(categoryFilter, ['Syrups+'], false);
+  } else {
+    fillSelect(categoryFilter, CATEGORIES, true);
+  }
+
+  const safeValue = Array.from(categoryFilter.options).some((opt) => opt.value === desiredValue)
+    ? desiredValue
+    : categoryFilter.options[0]?.value || '';
+
+  categoryFilter.value = safeValue;
+}
+
+function saveCurrentTabStateFromUI() {
+  const tab = state.activeTab;
+  const current = state.tabState[tab] || defaultTabViewState();
+  state.tabState[tab] = {
+    ...current,
+    search: $('#search-input').value.trim(),
+    status: $('#status-filter').value,
+    sort: $('#sort-field').value,
+    order: $('#sort-order').value,
+    category: $('#category-filter').value,
+    wineType: $('#wine-type-filter').value,
+    beerPackaging: $('#beer-packaging-filter').value
+  };
+}
+
+function loadTabStateIntoUI(tabName) {
+  const tabViewState = state.tabState[tabName] || defaultTabViewState();
+  $('#search-input').value = tabViewState.search || '';
+  $('#status-filter').value = tabViewState.status || '';
+  $('#sort-field').value = tabViewState.sort || 'status';
+  $('#sort-order').value = tabViewState.order || 'desc';
+  $('#wine-type-filter').value = tabViewState.wineType || '';
+  $('#beer-packaging-filter').value = tabViewState.beerPackaging || '';
+  applyCategoryOptionsForTab(tabName, tabViewState.category || '');
+}
+
+function applyTabConstraints(tabName, uiState) {
+  const next = { ...uiState };
+  if (tabName === 'Liquor') {
+    if (next.category && !LIQUOR_CATEGORIES.includes(next.category)) {
+      next.category = '';
+    }
+  }
+  if (tabName === 'Wine') {
+    next.category = 'Wine';
+  }
+  if (tabName === 'Beer') {
+    next.category = 'Beer';
+  }
+  if (tabName === 'Syrups+') {
+    next.category = 'Syrups+';
+  }
+  return next;
+}
+
+function syncFiltersFromUiState(uiState) {
+  state.filters.search = uiState.search || '';
+  state.filters.status = uiState.status || '';
+  state.filters.sort = uiState.sort || 'status';
+  state.filters.order = uiState.order || 'desc';
+  state.filters.category = uiState.category || '';
+  state.filters.wineType = uiState.wineType || '';
+  state.filters.beerPackaging = uiState.beerPackaging || '';
+}
+
+function getEffectiveQueryParamsFromUI() {
+  const params = new URLSearchParams();
+  if (state.filters.search) params.set('search', state.filters.search);
+  if (state.filters.status) params.set('status', state.filters.status);
+  if (state.filters.sort) params.set('sort', state.filters.sort);
+  if (state.filters.order) params.set('order', state.filters.order);
+  if (state.filters.category) params.set('category', state.filters.category);
+  return params;
+}
+
+function matchesWineType(item, wineType) {
+  if (!wineType) return true;
+  const notes = (item.notes || '').toLowerCase();
+  if (!notes) return false;
+  if (wineType === 'Red') return notes.includes('red');
+  if (wineType === 'White') return notes.includes('white');
+  return true;
+}
+
+function detectBeerPackaging(item) {
+  const haystack = `${item.unit || ''} ${item.name || ''} ${item.notes || ''}`.toLowerCase();
+  if (/\b(keg|sixtel|half|full)\b/.test(haystack)) return 'KEG';
+  if (/\b(can|4pack|4-pack|case)\b/.test(haystack)) return 'CAN';
+  return '';
+}
+
+function matchesBeerPackaging(item, beerPackaging) {
+  if (!beerPackaging) return true;
+  const packaging = detectBeerPackaging(item);
+  if (beerPackaging === 'Kegs') return packaging === 'KEG';
+  if (beerPackaging === 'Cans') return packaging === 'CAN';
+  return true;
+}
+
+function getBeerPackagingLabel(item) {
+  const packaging = detectBeerPackaging(item);
+  if (!packaging) return '';
+
+  const haystack = `${item.unit || ''} ${item.name || ''} ${item.notes || ''}`.toLowerCase();
+  if (packaging === 'CAN') {
+    if (/\b4pack|4-pack\b/.test(haystack)) return '4PK';
+    if (/\bcase\b/.test(haystack)) return 'CASE';
+    return 'CAN';
+  }
+
+  return 'KEG';
+}
+
+async function loadItems() {
+  setLoading(true);
+  closeAllActionMenus();
+  try {
+    const params = getEffectiveQueryParamsFromUI();
+    state.allItems = await api(`/api/items?${params.toString()}`);
+    state.items = state.allItems.filter((item) => {
+      if (state.activeTab === 'Wine') return matchesWineType(item, state.filters.wineType);
+      if (state.activeTab === 'Beer') return matchesBeerPackaging(item, state.filters.beerPackaging);
+      return true;
+    });
+    renderTable();
+  } catch (err) {
+    showToast(err.message, true);
+  } finally {
+    setLoading(false);
   }
 }
 
@@ -76,28 +264,6 @@ async function api(path, options = {}) {
 
   if (res.status === 204) return null;
   return res.json();
-}
-
-function buildQuery() {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(state.filters)) {
-    if (value === '' || value === false) continue;
-    params.set(key, String(value));
-  }
-  return params.toString();
-}
-
-async function loadItems() {
-  setLoading(true);
-  closeAllActionMenus();
-  try {
-    state.items = await api(`/api/items?${buildQuery()}`);
-    renderTable();
-  } catch (err) {
-    showToast(err.message, true);
-  } finally {
-    setLoading(false);
-  }
 }
 
 function getRowClassForStatus(status) {
@@ -151,7 +317,7 @@ function renderTable() {
     tr.dataset.itemId = String(item.id);
     if (rowClass) tr.classList.add(rowClass);
     tr.innerHTML = `
-      <td>${item.name}</td>
+      <td>${item.name}${getBeerPackagingLabel(item) ? ` <span class="item-tag">(${getBeerPackagingLabel(item)})</span>` : ""}</td>
       <td>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </td>
@@ -180,7 +346,7 @@ function renderTable() {
     card.dataset.itemId = String(item.id);
     card.innerHTML = `
       <div class="quick-card-head">
-        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}</h3>
+        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}${getBeerPackagingLabel(item) ? ` <span class="item-tag">(${getBeerPackagingLabel(item)})</span>` : ""}</h3>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </div>
       <p class="quick-quantity" aria-label="Quantity ${item.quantity}">${item.quantity}</p>
@@ -743,85 +909,95 @@ function exportFullInventoryCsv() {
 }
 
 function matchesOrderListFilters(item) {
-  if (!['OUT', 'LOW'].includes(item.status)) return false;
-
-  const search = state.filters.search.toLowerCase();
-  const matchesSearch = !search
-    || item.name.toLowerCase().includes(search)
-    || (item.notes || '').toLowerCase().includes(search);
-  const matchesCategory = !state.filters.category || item.category === state.filters.category;
-
-  return matchesSearch && matchesCategory;
+  return ['OUT', 'LOW'].includes(item.status);
 }
 
 async function exportOrderListCsv() {
-  setLoading(true);
-  try {
-    const params = new URLSearchParams();
-    if (state.filters.search) params.set('search', state.filters.search);
-    if (state.filters.category) params.set('category', state.filters.category);
+  const rows = state.items
+    .filter(matchesOrderListFilters)
+    .map((item) => ({
+      name: item.name,
+      category: item.category,
+      unit: item.unit,
+      quantity: item.quantity,
+      par_level: item.par_level,
+      status: item.status,
+      notes: item.notes || ''
+    }));
 
-    const items = await api(`/api/items?${params.toString()}`);
-    const rows = items
-      .filter(matchesOrderListFilters)
-      .map((item) => ({
-        name: item.name,
-        category: item.category,
-        unit: item.unit,
-        quantity: item.quantity,
-        par_level: item.par_level,
-        status: item.status,
-        notes: item.notes || ''
-      }));
+  const columns = ['name', 'category', 'unit', 'quantity', 'par_level', 'status', 'notes'];
+  const csvContent = createCsvContent(rows, columns);
+  downloadCsv(`bar_inventory_order_${dateStamp()}.csv`, csvContent);
+  showToast(`Exported ${rows.length} order-list item(s) to CSV.`);
+}
 
-    const columns = ['name', 'category', 'unit', 'quantity', 'par_level', 'status', 'notes'];
-    const csvContent = createCsvContent(rows, columns);
-    downloadCsv(`bar_inventory_order_${dateStamp()}.csv`, csvContent);
-    showToast(`Exported ${rows.length} order-list item(s) to CSV.`);
-  } catch (err) {
-    showToast(err.message, true);
-  } finally {
-    setLoading(false);
-  }
+function updateActiveTabButtons() {
+  document.querySelectorAll('.tab-btn').forEach((button) => {
+    button.classList.toggle('active', button.dataset.tab === state.activeTab);
+  });
+}
+
+function refreshForCurrentTab() {
+  const uiState = {
+    search: $('#search-input').value.trim(),
+    status: $('#status-filter').value,
+    sort: $('#sort-field').value,
+    order: $('#sort-order').value,
+    category: $('#category-filter').value,
+    wineType: $('#wine-type-filter').value,
+    beerPackaging: $('#beer-packaging-filter').value
+  };
+
+  const constrainedState = applyTabConstraints(state.activeTab, uiState);
+  syncFiltersFromUiState(constrainedState);
+
+  const showWineType = state.activeTab === 'Wine';
+  const showBeerPackaging = state.activeTab === 'Beer';
+  $('#wine-type-filter-wrap').classList.toggle('hidden', !showWineType);
+  $('#beer-packaging-filter-wrap').classList.toggle('hidden', !showBeerPackaging);
+
+  applyCategoryOptionsForTab(state.activeTab, constrainedState.category);
+
+  saveCurrentTabStateFromUI();
+  persistTabState();
+  updateActiveTabButtons();
+  loadItems();
+}
+
+function wireTabs() {
+  document.querySelectorAll('.tab-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+      const nextTab = button.dataset.tab;
+      if (!TABS.includes(nextTab) || nextTab === state.activeTab) return;
+
+      saveCurrentTabStateFromUI();
+      state.activeTab = nextTab;
+      loadTabStateIntoUI(nextTab);
+      refreshForCurrentTab();
+    });
+  });
 }
 
 function wireUpFilters() {
-  searchInput.addEventListener('input', (e) => {
-    state.filters.search = e.target.value.trim();
-    loadItems();
-  });
-
-  $('#category-filter').addEventListener('change', (e) => {
-    state.filters.category = e.target.value;
-    loadItems();
-  });
-
-  $('#status-filter').addEventListener('change', (e) => {
-    state.filters.status = e.target.value;
-    loadItems();
-  });
-
-  $('#sort-field').addEventListener('change', (e) => {
-    state.filters.sort = e.target.value;
-    loadItems();
-  });
-
-  $('#sort-order').addEventListener('change', (e) => {
-    state.filters.order = e.target.value;
-    loadItems();
-  });
-
+  searchInput.addEventListener('input', refreshForCurrentTab);
+  $('#category-filter').addEventListener('change', refreshForCurrentTab);
+  $('#status-filter').addEventListener('change', refreshForCurrentTab);
+  $('#sort-field').addEventListener('change', refreshForCurrentTab);
+  $('#sort-order').addEventListener('change', refreshForCurrentTab);
+  $('#wine-type-filter').addEventListener('change', refreshForCurrentTab);
+  $('#beer-packaging-filter').addEventListener('change', refreshForCurrentTab);
 }
 
 function init() {
-  fillSelect($('#category-filter'), CATEGORIES, true);
+  restoreTabState();
   fillSelect($('#status-filter'), STATUSES, true);
   fillSelect($('#category'), CATEGORIES, false);
   fillSelect($('#status'), STATUSES, false);
 
-  $('#sort-field').value = state.filters.sort;
-  $('#sort-order').value = state.filters.order;
+  loadTabStateIntoUI(state.activeTab);
+  refreshForCurrentTab();
 
+  wireTabs();
   wireUpFilters();
   wireKeyboardShortcuts();
   wireStickyTopBar();
@@ -857,7 +1033,6 @@ function init() {
   });
 
   updateUndoRedoButtons();
-  loadItems();
 }
 
 init();

@@ -8,7 +8,8 @@ const VALID_CATEGORIES = [
   'Wine',
   'Beer',
   'NA',
-  'Other'
+  'Other',
+  'Syrups+'
 ];
 
 const VALID_STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
