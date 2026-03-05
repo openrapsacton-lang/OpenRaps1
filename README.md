@@ -19,10 +19,8 @@ Open: `http://localhost:3000`
 ## What the app includes
 
 - Inventory table with search, category/status filters, and sorting.
-- Excel-like tabs (Total Stock, Liquor, Wine, Beer, Syrups+) with per-tab remembered filters and sorting.
 - Add/Edit/Delete item form.
 - Quick row actions: `+1`, `-1`, inline status update, and “Mark Low”.
-- Beer packaging labeling (KEG/CAN/4PK/CASE) and tab-specific Beer/Wine sub-filters.
 - Server-side validation and friendly API errors.
 - SQLite persistence and auto-create tables on first run.
 - Change history events for every item change.
