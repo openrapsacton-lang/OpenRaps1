@@ -26,6 +26,14 @@
         </div>
       </header>
 
+      <nav class="tabs-wrap" aria-label="Inventory Views">
+        <button class="tab-btn active" data-tab="Total Stock" type="button">Total Stock</button>
+        <button class="tab-btn" data-tab="Liquor" type="button">Liquor</button>
+        <button class="tab-btn" data-tab="Wine" type="button">Wine</button>
+        <button class="tab-btn" data-tab="Beer" type="button">Beer</button>
+        <button class="tab-btn" data-tab="Syrups+" type="button">Syrups+</button>
+      </nav>
+
       <section class="controls card">
         <div id="mobile-search-bar" class="mobile-search-bar">
           <label>
@@ -37,6 +45,24 @@
         <label>
           Category
           <select id="category-filter"></select>
+        </label>
+
+        <label id="wine-type-wrap" class="hidden">
+          Wine Type
+          <select id="wine-type-filter">
+            <option value="All">All</option>
+            <option value="Red">Red</option>
+            <option value="White">White</option>
+          </select>
+        </label>
+
+        <label id="beer-packaging-wrap" class="hidden">
+          Packaging
+          <select id="beer-packaging-filter">
+            <option value="All">All</option>
+            <option value="Kegs">Kegs</option>
+            <option value="Cans">Cans</option>
+          </select>
         </label>
 
         <label>
