@@ -55,6 +55,39 @@ body {
   margin-bottom: 1rem;
 }
 
+
+.tabs-wrap {
+  display: flex;
+  gap: 0.55rem;
+  margin: 0 0 0.8rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  padding-bottom: 0.15rem;
+}
+
+.tab-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  color: #334155;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+.tab-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.packaging-badge {
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .card {
   background: white;
   border-radius: 12px;
@@ -425,4 +458,14 @@ body.mobile-quick-mode #empty-state {
     width: 100%;
     align-items: stretch;
   }
+}
+
+
+body.mobile-quick-mode .controls label#wine-type-wrap,
+body.mobile-quick-mode .controls label#beer-packaging-wrap {
+  display: flex;
+}
+
+body.mobile-quick-mode .tabs-wrap {
+  margin-bottom: 0.6rem;
 }

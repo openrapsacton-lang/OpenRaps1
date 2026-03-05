@@ -18,8 +18,8 @@ Open: `http://localhost:3000`
 
 ## What the app includes
 
-- Inventory table with search, category/status filters, and sorting.
-- Add/Edit/Delete item form.
+- Inventory table with search, category/status filters, sorting, and 5 Excel-like saved tabs (Total Stock, Liquor, Wine, Beer, Syrups+).
+- Add/Edit/Delete item form (including Syrups+ category support) with a unit dropdown (Bottle, Keg, 4Pk, Can).
 - Quick row actions: `+1`, `-1`, inline status update, and “Mark Low”.
 - Server-side validation and friendly API errors.
 - SQLite persistence and auto-create tables on first run.
@@ -86,3 +86,14 @@ Edit the `starterItems` array in `src/db.js`, then delete `data/bar_inventory.sq
 4. Add environment variables + Secrets Manager.
 5. Add authentication (Cognito or custom JWT provider).
 6. Add CI/CD (GitHub Actions) and monitoring (CloudWatch).
+
+
+## Views / Tabs
+
+- **Total Stock**: all items.
+- **Liquor**: spirits categories only (Vodka, Tequila, Rum, Whiskey, Gin, Liqueur).
+- **Wine**: Wine-only with Wine Type filter (All/Red/White via notes match).
+- **Beer**: Beer-only with Packaging filter (All/Kegs/Cans) and packaging labels in table/cards.
+- **Syrups+**: Syrups+/mixers category view.
+
+Each tab remembers its own search, status, sort, order, category, and tab-specific sub-filters.
