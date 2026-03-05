@@ -4,6 +4,7 @@ const STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
 const TAB_KEYS = ['Total Stock', 'Liquor', 'Wine', 'Beer', 'Syrups+'];
 const LIQUOR_CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur'];
 const TAB_STORAGE_KEY = 'barInventoryTabStateV1';
+const UNIT_OPTIONS = ['Bottle', 'Keg', '4Pk', 'Can'];
 
 function createDefaultTabState() {
   return {
@@ -295,6 +296,10 @@ function getEffectiveQueryParamsFromUI() {
 
 function applyClientFilters(items) {
   return items.filter((item) => {
+    if (state.activeTab === 'Liquor' && !LIQUOR_CATEGORIES.includes(item.category)) {
+      return false;
+    }
+
     if (state.activeTab === 'Wine' && !matchesWineType(item, state.wineType)) {
       return false;
     }
@@ -509,11 +514,26 @@ function resetForm() {
   $('#name').value = '';
   $('#category').value = CATEGORIES[0];
   $('#quantity').value = '0';
-  $('#unit').value = 'bottle';
+  $('#unit').value = 'Bottle';
   $('#status').value = 'FULL';
   $('#par_level').value = '0';
   $('#notes').value = '';
   $('#form-error').textContent = '';
+}
+
+function normalizeUnitValue(unitValue) {
+  const rawUnit = String(unitValue || '').trim();
+  if (!rawUnit) return 'Bottle';
+
+  const match = UNIT_OPTIONS.find((option) => option.toLowerCase() === rawUnit.toLowerCase());
+  if (match) return match;
+
+  const unitSelect = $('#unit');
+  const dynamicOption = document.createElement('option');
+  dynamicOption.value = rawUnit;
+  dynamicOption.textContent = rawUnit;
+  unitSelect.appendChild(dynamicOption);
+  return rawUnit;
 }
 
 function openCreateModal() {
@@ -530,7 +550,7 @@ function openEditModal(item) {
   $('#name').value = item.name;
   $('#category').value = item.category;
   $('#quantity').value = item.quantity;
-  $('#unit').value = item.unit;
+  $('#unit').value = normalizeUnitValue(item.unit);
   $('#status').value = item.status;
   $('#par_level').value = item.par_level;
   $('#notes').value = item.notes || '';
@@ -1090,6 +1110,7 @@ function init() {
   fillSelect($('#status-filter'), STATUSES, true);
   fillSelect($('#category'), CATEGORIES, false);
   fillSelect($('#status'), STATUSES, false);
+  fillSelect($('#unit'), UNIT_OPTIONS, false);
 
   $('#sort-field').value = state.filters.sort;
   $('#sort-order').value = state.filters.order;

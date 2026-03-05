@@ -19,7 +19,7 @@ Open: `http://localhost:3000`
 ## What the app includes
 
 - Inventory table with search, category/status filters, sorting, and 5 Excel-like saved tabs (Total Stock, Liquor, Wine, Beer, Syrups+).
-- Add/Edit/Delete item form (including Syrups+ category support).
+- Add/Edit/Delete item form (including Syrups+ category support) with a unit dropdown (Bottle, Keg, 4Pk, Can).
 - Quick row actions: `+1`, `-1`, inline status update, and “Mark Low”.
 - Server-side validation and friendly API errors.
 - SQLite persistence and auto-create tables on first run.
