@@ -48,7 +48,7 @@ const $ = (selector) => document.querySelector(selector);
 const itemDialog = $('#item-dialog');
 const itemForm = $('#item-form');
 const historyDialog = $('#history-dialog');
-const topBar = $('#top-bar');
+const stickyControls = $('#sticky-controls');
 const searchInput = $('#search-input');
 const clearSearchBtn = $('#clear-search-btn');
 const mobileQuickList = $('#mobile-quick-list');
@@ -732,7 +732,7 @@ function wireKeyboardShortcuts() {
 
 function wireStickyTopBar() {
   function updateStickyState() {
-    topBar.classList.toggle('is-sticky', window.scrollY > 8);
+    stickyControls.classList.toggle('is-sticky', window.scrollY > 8);
   }
 
   window.addEventListener('scroll', updateStickyState, { passive: true });
