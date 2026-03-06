@@ -76,8 +76,8 @@ function createItem(payload) {
   const input = { ...payload, status: autoStatus };
 
   const stmt = db.prepare(`
-    INSERT INTO items (name, category, quantity, unit, status, par_level, notes)
-    VALUES (@name, @category, @quantity, @unit, @status, @par_level, @notes)
+    INSERT INTO items (name, category, quantity, unit, status, par_level, wine_type, notes)
+    VALUES (@name, @category, @quantity, @unit, @status, @par_level, @wine_type, @notes)
   `);
 
   const result = stmt.run(input);
@@ -113,6 +113,7 @@ function updateItem(id, payload) {
         unit = @unit,
         status = @status,
         par_level = @par_level,
+        wine_type = @wine_type,
         notes = @notes,
         updated_at = @updated_at
     WHERE id = @id
