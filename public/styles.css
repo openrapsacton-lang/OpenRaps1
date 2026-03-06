@@ -174,25 +174,33 @@ input, select, textarea {
 
 .search-input-wrap #search-input {
   width: 100%;
-  padding-right: 2rem;
+  padding-right: 2.4rem;
 }
 
 .clear-search-btn {
   position: absolute;
   top: 50%;
-  right: 0.45rem;
+  right: 0.35rem;
   transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
   border: 0;
-  background: transparent;
-  color: #6b7280;
-  font-size: 1.2rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 1.25rem;
   line-height: 1;
   padding: 0;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .clear-search-btn:hover {
   color: #1f2937;
+  background: #cbd5e1;
 }
 
 
@@ -414,6 +422,16 @@ menu {
   opacity: 0.9;
 }
 
+.quick-card--focused-light {
+  border-color: #93c5fd;
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+}
+
+.quick-card--focused-strong {
+  border-color: #3b82f6;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+}
+
 .quick-card-head {
   display: flex;
   align-items: flex-start;
@@ -473,8 +491,8 @@ body.mobile-quick-mode .top-bar-wrap {
 body.mobile-quick-mode .sticky-controls-wrap {
   top: 0;
   z-index: 40;
-  padding: 0.35rem 0.15rem 0.45rem;
-  margin-bottom: 0.5rem;
+  padding: 0.2rem 0.1rem 0.28rem;
+  margin-bottom: 0.4rem;
   background: rgba(248, 250, 252, 0.98);
 }
 
@@ -495,16 +513,27 @@ body.mobile-quick-mode .controls {
 body.mobile-quick-mode .mobile-search-bar {
   position: static;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 0.55rem;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+  border-radius: 10px;
+  padding: 0.35rem;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
   border: 1px solid #dbeafe;
 }
 
+body.mobile-quick-mode .mobile-search-input {
+  margin: 0;
+}
+
 body.mobile-quick-mode #search-input {
-  font-size: 1.05rem;
-  min-height: 50px;
-  padding: 0.7rem;
+  font-size: 0.98rem;
+  min-height: 42px;
+  padding: 0.5rem 2.5rem 0.5rem 0.65rem;
+}
+
+body.mobile-quick-mode .clear-search-btn {
+  width: 2.1rem;
+  height: 2.1rem;
+  font-size: 1.35rem;
+  right: 0.3rem;
 }
 
 body.mobile-quick-mode .mobile-quick-list {
@@ -523,12 +552,26 @@ body.mobile-quick-mode #empty-state {
     overflow: hidden;
   }
 
+  body.mobile-portrait-mode .tab-btn {
+    padding: 0.38rem 0.75rem;
+  }
+
+  body.mobile-portrait-mode .mobile-top-actions .btn {
+    min-height: 40px;
+    padding: 0.38rem 0.45rem;
+  }
+
+  body.mobile-portrait-mode .mobile-sort-menu {
+    min-width: 9.5rem;
+  }
+
   .toast {
     left: 0.75rem;
     right: 0.75rem;
     bottom: 0.75rem;
   }
 }
+
 
 @media (max-width: 640px) {
   .page-header {
@@ -555,20 +598,52 @@ body.mobile-quick-mode .controls label#beer-packaging-wrap {
 }
 
 body.mobile-quick-mode .tabs-wrap {
-  margin: 0 0 0.5rem;
-  padding: 0.15rem 0.05rem;
+  margin: 0 0 0.3rem;
+  padding: 0.1rem 0.05rem;
 }
 
 .mobile-top-actions {
   display: none;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.45rem;
-  margin-top: 0.55rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.4rem;
 }
 
 body.mobile-quick-mode .mobile-top-actions {
   display: grid;
 }
+
+.mobile-sort-wrap {
+  position: relative;
+}
+
+.mobile-sort-wrap #mobile-sort-btn {
+  width: 100%;
+}
+
+.mobile-sort-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 50;
+  display: grid;
+  gap: 0.25rem;
+  min-width: 10.5rem;
+  padding: 0.35rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+}
+
+.mobile-sort-option {
+  border: 1px solid #dbeafe;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.38rem 0.5rem;
+  text-align: left;
+}
+
 
 .wine-type-badge {
   display: inline-block;
@@ -593,35 +668,4 @@ body.mobile-quick-mode .mobile-top-actions {
 .inventory-content {
   position: relative;
   z-index: 1;
-}
-
-.mobile-top-actions {
-  display: none;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.45rem;
-  margin-top: 0.55rem;
-}
-
-body.mobile-quick-mode .mobile-top-actions {
-  display: grid;
-}
-
-.wine-type-badge {
-  display: inline-block;
-  margin-left: 0.3rem;
-  padding: 0.05rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  vertical-align: middle;
-}
-
-.wine-type-red {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.wine-type-white {
-  background: #fef3c7;
-  color: #92400e;
 }
