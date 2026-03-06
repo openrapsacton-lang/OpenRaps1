@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, system-ui, -apple-system, sans-serif;
   color: #1f2937;
-  background: #fef2f2;
+  background: #1f3235;
 }
 
 * { box-sizing: border-box; }
@@ -16,23 +16,23 @@ body {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: #fee2e2;
-  padding-bottom: 0.35rem;
-  margin-bottom: 0.35rem;
+  background: #76bec2b7;
+  padding-bottom: 0.0rem;
+  margin-bottom: 0.0rem;
   transition: padding 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .top-bar-wrap.is-sticky {
-  padding-bottom: 0.2rem;
+  padding-bottom: 0.0rem;
   box-shadow: 0 6px 12px rgba(127, 29, 29, 0.08);
-  border-bottom: 1px solid #fecaca;
+  border-bottom: 3px solid #9515afe8;
 }
 
 .header-actions {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.45rem;
+  gap: 0.0rem;
 }
 
 .undo-redo-actions {
@@ -60,7 +60,7 @@ body {
 #top-bar .controls {
   padding: 0.75rem;
   margin-bottom: 0.5rem;
-  border: 1px solid #fecaca;
+  border: 1px solid #ec1a1a93;
 }
 
 #top-bar .controls label {
@@ -234,11 +234,11 @@ th, td {
 }
 
 #items-table tbody tr.row-out {
-  background-color: #fee2e2;
+  background-color: #fdc4c4;
 }
 
 #items-table tbody tr.row-out:hover {
-  background-color: #fecaca;
+  background-color: #f8afaf;
 }
 
 #items-table tbody tr.row-low {
