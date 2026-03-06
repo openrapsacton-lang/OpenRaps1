@@ -64,6 +64,8 @@ const redoStack = [];
 const mobileAddItemBtn = $('#mobile-add-item-btn');
 const mobileUndoBtn = $('#mobile-undo-btn');
 const mobileRedoBtn = $('#mobile-redo-btn');
+const mobileSortBtn = $('#mobile-sort-btn');
+const mobileSortMenu = $('#mobile-sort-menu');
 
 
 function fillSelect(selectEl, values, includeAll = false) {
@@ -217,6 +219,57 @@ function toggleClearSearchButton() {
   clearSearchBtn.classList.toggle('hidden', !searchInput.value);
 }
 
+function getMobileSortPreset(sort, order) {
+  if (sort === 'name' && order === 'asc') return 'name-asc';
+  if (sort === 'name' && order === 'desc') return 'name-desc';
+  return 'status-priority';
+}
+
+function updateMobileSortButtonLabel() {
+  if (!mobileSortBtn) return;
+  const preset = getMobileSortPreset(state.filters.sort, state.filters.order);
+  if (preset === 'name-asc') {
+    mobileSortBtn.textContent = 'Sort: A–Z';
+    return;
+  }
+  if (preset === 'name-desc') {
+    mobileSortBtn.textContent = 'Sort: Z–A';
+    return;
+  }
+  mobileSortBtn.textContent = 'Sort: Status';
+}
+
+function closeMobileSortMenu() {
+  if (!mobileSortMenu || !mobileSortBtn) return;
+  mobileSortMenu.classList.add('hidden');
+  mobileSortBtn.setAttribute('aria-expanded', 'false');
+}
+
+function openMobileSortMenu() {
+  if (!mobileSortMenu || !mobileSortBtn) return;
+  mobileSortMenu.classList.remove('hidden');
+  mobileSortBtn.setAttribute('aria-expanded', 'true');
+}
+
+function applyMobileSortPreset(preset) {
+  if (preset === 'name-asc') {
+    state.filters.sort = 'name';
+    state.filters.order = 'asc';
+  } else if (preset === 'name-desc') {
+    state.filters.sort = 'name';
+    state.filters.order = 'desc';
+  } else {
+    state.filters.sort = 'status';
+    state.filters.order = 'desc';
+  }
+
+  $('#sort-field').value = state.filters.sort;
+  $('#sort-order').value = state.filters.order;
+  updateMobileSortButtonLabel();
+  saveCurrentTabState();
+  loadItems();
+}
+
 function loadTabStateIntoUI(tab) {
   const savedState = applyTabConstraints(tab, state.tabState[tab] || createDefaultTabState());
   state.tabState[tab] = savedState;
@@ -238,6 +291,7 @@ function loadTabStateIntoUI(tab) {
   state.wineType = wineTypeFilter.value;
   state.beerPackaging = beerPackagingFilter.value;
 
+  updateMobileSortButtonLabel();
   updateTabSpecificControls();
 }
 
@@ -425,6 +479,13 @@ function renderTable() {
 
   $('#empty-state').classList.toggle('hidden', state.items.length > 0);
 
+  const trimmedSearch = (state.filters.search || '').trim();
+  const focusedClass = trimmedSearch && state.items.length === 1
+    ? 'quick-card--focused-strong'
+    : trimmedSearch && state.items.length > 1 && state.items.length <= 3
+      ? 'quick-card--focused-light'
+      : '';
+
   for (const item of state.items) {
     const rowClass = getRowClassForStatus(item.status);
 
@@ -457,7 +518,7 @@ function renderTable() {
 
     const card = document.createElement('article');
     const statusClass = getQuickCardStatusClass(item.status);
-    card.className = `quick-card ${statusClass}`.trim();
+    card.className = `quick-card ${statusClass} ${focusedClass}`.trim();
     card.dataset.itemId = String(item.id);
     card.innerHTML = `
       <div class="quick-card-head">
@@ -1094,6 +1155,10 @@ function wireUpFilters() {
     loadItems();
   });
 
+  clearSearchBtn.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+  });
+
   clearSearchBtn.addEventListener('click', () => {
     searchInput.value = '';
     state.filters.search = '';
@@ -1117,12 +1182,14 @@ function wireUpFilters() {
 
   $('#sort-field').addEventListener('change', (e) => {
     state.filters.sort = e.target.value;
+    updateMobileSortButtonLabel();
     saveCurrentTabState();
     loadItems();
   });
 
   $('#sort-order').addEventListener('change', (e) => {
     state.filters.order = e.target.value;
+    updateMobileSortButtonLabel();
     saveCurrentTabState();
     loadItems();
   });
@@ -1138,6 +1205,30 @@ function wireUpFilters() {
     saveCurrentTabState();
     loadItems();
   });
+
+  if (mobileSortBtn && mobileSortMenu) {
+    mobileSortBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = !mobileSortMenu.classList.contains('hidden');
+      if (isOpen) {
+        closeMobileSortMenu();
+      } else {
+        openMobileSortMenu();
+      }
+    });
+
+    mobileSortMenu.addEventListener('click', (event) => {
+      const option = event.target.closest('[data-sort-preset]');
+      if (!option) return;
+      applyMobileSortPreset(option.dataset.sortPreset);
+      closeMobileSortMenu();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (event.target.closest('.mobile-sort-wrap')) return;
+      closeMobileSortMenu();
+    });
+  }
 
   tabButtons.forEach((btn) => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
@@ -1155,6 +1246,7 @@ function init() {
 
   $('#sort-field').value = state.filters.sort;
   $('#sort-order').value = state.filters.order;
+  updateMobileSortButtonLabel();
   loadTabStateIntoUI(state.activeTab);
   updateTabButtons();
 
