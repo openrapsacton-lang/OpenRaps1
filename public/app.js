@@ -442,9 +442,9 @@ function renderTable() {
             <button class="btn" data-action="minus" data-id="${item.id}">-1</button>
             <button class="btn" data-action="plus" data-id="${item.id}">+1</button>
             <button class="btn" data-action="plus10" data-id="${item.id}">+10</button>
-            <button class="btn" data-action="mark-low" data-id="${item.id}">Mark Low</button>
-            <button class="btn" data-action="mark-full" data-id="${item.id}">Mark Full</button>
-            <button class="btn" data-action="mark-out" data-id="${item.id}">Mark OUT</button>
+            <button class="btn" data-action="mark-low" data-id="${item.id}">Low</button>
+            <button class="btn" data-action="mark-full" data-id="${item.id}">Full</button>
+            <button class="btn" data-action="mark-out" data-id="${item.id}">OUT</button>
             <button class="btn" data-action="edit" data-id="${item.id}">Edit</button>
             <button class="btn" data-action="history" data-id="${item.id}">History</button>
             <select data-action="status" data-id="${item.id}">
