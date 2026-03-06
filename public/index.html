@@ -38,7 +38,20 @@
         <div id="mobile-search-bar" class="mobile-search-bar">
           <label>
             Search
-            <input id="search-input" type="text" placeholder="Search by name" />
+            <div class="search-input-wrap">
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search by name"
+                autocapitalize="none"
+                autocorrect="off"
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <button id="clear-search-btn" type="button" class="clear-search-btn hidden" aria-label="Clear search">
+                ×
+              </button>
+            </div>
           </label>
         </div>
 

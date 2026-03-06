@@ -50,6 +50,7 @@ const itemForm = $('#item-form');
 const historyDialog = $('#history-dialog');
 const topBar = $('#top-bar');
 const searchInput = $('#search-input');
+const clearSearchBtn = $('#clear-search-btn');
 const mobileQuickList = $('#mobile-quick-list');
 const tabButtons = Array.from(document.querySelectorAll('.tab-btn'));
 const wineTypeWrap = $('#wine-type-wrap');
@@ -207,11 +208,16 @@ function updateTabSpecificControls() {
   beerPackagingWrap.classList.toggle('hidden', state.activeTab !== 'Beer');
 }
 
+function toggleClearSearchButton() {
+  clearSearchBtn.classList.toggle('hidden', !searchInput.value);
+}
+
 function loadTabStateIntoUI(tab) {
   const savedState = applyTabConstraints(tab, state.tabState[tab] || createDefaultTabState());
   state.tabState[tab] = savedState;
 
   searchInput.value = savedState.search || '';
+  toggleClearSearchButton();
   $('#status-filter').value = savedState.status || '';
   $('#sort-field').value = savedState.sort || 'status';
   $('#sort-order').value = savedState.order || 'desc';
@@ -1059,8 +1065,18 @@ async function exportOrderListCsv() {
 function wireUpFilters() {
   searchInput.addEventListener('input', (e) => {
     state.filters.search = e.target.value.trim();
+    toggleClearSearchButton();
     saveCurrentTabState();
     loadItems();
+  });
+
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    state.filters.search = '';
+    toggleClearSearchButton();
+    saveCurrentTabState();
+    loadItems();
+    searchInput.focus();
   });
 
   $('#category-filter').addEventListener('change', (e) => {
