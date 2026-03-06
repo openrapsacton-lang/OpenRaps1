@@ -594,3 +594,34 @@ body.mobile-quick-mode .mobile-top-actions {
   position: relative;
   z-index: 1;
 }
+
+.mobile-top-actions {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+
+body.mobile-quick-mode .mobile-top-actions {
+  display: grid;
+}
+
+.wine-type-badge {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.wine-type-red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.wine-type-white {
+  background: #fef3c7;
+  color: #92400e;
+}
