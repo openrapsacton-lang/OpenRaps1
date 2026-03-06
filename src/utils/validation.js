@@ -1,4 +1,4 @@
-const { VALID_CATEGORIES, VALID_STATUSES } = require('./constants');
+const { VALID_CATEGORIES, VALID_STATUSES, VALID_WINE_TYPES } = require('./constants');
 
 function normalizeText(input) {
   if (typeof input !== 'string') return '';
@@ -54,6 +54,21 @@ function validateItemPayload(payload, { partial = false } = {}) {
   if (!partial || Object.hasOwn(payload, 'par_level')) {
     const err = asNonNegativeNumber(payload.par_level, 'par_level');
     if (err) errors.push(err);
+  }
+
+
+  if (!partial || Object.hasOwn(payload, 'wine_type')) {
+    const wineType = normalizeText(payload.wine_type);
+    if (wineType && !VALID_WINE_TYPES.includes(wineType)) {
+      errors.push(`wine_type must be one of: ${VALID_WINE_TYPES.join(', ')}.`);
+    }
+  }
+
+  if ((!partial || Object.hasOwn(payload, 'category') || Object.hasOwn(payload, 'wine_type')) && payload.category === 'Wine') {
+    const wineType = normalizeText(payload.wine_type);
+    if (!wineType) {
+      errors.push('wine_type is required when category is Wine.');
+    }
   }
 
   if (Object.hasOwn(payload, 'notes') && typeof payload.notes !== 'string') {
