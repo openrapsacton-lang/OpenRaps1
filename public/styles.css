@@ -163,6 +163,35 @@ input, select, textarea {
   padding: 0.5rem;
 }
 
+
+.search-input-wrap {
+  position: relative;
+}
+
+.search-input-wrap #search-input {
+  width: 100%;
+  padding-right: 2rem;
+}
+
+.clear-search-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.clear-search-btn:hover {
+  color: #1f2937;
+}
+
+
 .checkbox {
   align-self: end;
   flex-direction: row;
