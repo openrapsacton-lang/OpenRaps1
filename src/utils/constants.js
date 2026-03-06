@@ -5,6 +5,7 @@ const VALID_CATEGORIES = [
   'Whiskey',
   'Gin',
   'Liqueur',
+  'Wine',
   'Red Wine',
   'White Wine',
   'Rosé Wine',
@@ -15,8 +16,10 @@ const VALID_CATEGORIES = [
 ];
 
 const VALID_STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
+const VALID_WINE_TYPES = ['Red', 'White'];
 
 module.exports = {
   VALID_CATEGORIES,
-  VALID_STATUSES
+  VALID_STATUSES,
+  VALID_WINE_TYPES
 };

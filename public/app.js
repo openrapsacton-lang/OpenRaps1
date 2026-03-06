@@ -48,7 +48,7 @@ const $ = (selector) => document.querySelector(selector);
 const itemDialog = $('#item-dialog');
 const itemForm = $('#item-form');
 const historyDialog = $('#history-dialog');
-const topBar = $('#top-bar');
+const stickyControls = $('#sticky-controls');
 const searchInput = $('#search-input');
 const clearSearchBtn = $('#clear-search-btn');
 const mobileQuickList = $('#mobile-quick-list');
@@ -57,8 +57,13 @@ const wineTypeWrap = $('#wine-type-wrap');
 const wineTypeFilter = $('#wine-type-filter');
 const beerPackagingWrap = $('#beer-packaging-wrap');
 const beerPackagingFilter = $('#beer-packaging-filter');
+const wineTypeInputWrap = $('#wine-type-input-wrap');
+const wineTypeInput = $('#wine_type');
 const undoStack = [];
 const redoStack = [];
+const mobileAddItemBtn = $('#mobile-add-item-btn');
+const mobileUndoBtn = $('#mobile-undo-btn');
+const mobileRedoBtn = $('#mobile-redo-btn');
 
 
 function fillSelect(selectEl, values, includeAll = false) {
@@ -271,8 +276,14 @@ function getBeerPackagingLabel(item) {
   return '';
 }
 
+function getWineTypeBadge(item) {
+  if (item.category !== 'Wine' || !item.wine_type) return '';
+  return ` <span class="wine-type-badge wine-type-${item.wine_type.toLowerCase()}">${item.wine_type}</span>`;
+}
+
 function matchesWineType(item, wineType) {
   if (wineType === 'All') return true;
+  if (item.wine_type === wineType) return true;
   const notes = (item.notes || '').toLowerCase();
   if (!notes.trim()) return false;
   if (wineType === 'Red') return notes.includes('red');
@@ -421,7 +432,7 @@ function renderTable() {
     tr.dataset.itemId = String(item.id);
     if (rowClass) tr.classList.add(rowClass);
     tr.innerHTML = `
-      <td>${item.name}${state.activeTab === 'Beer' && getBeerPackagingLabel(item) ? ` <span class="packaging-badge">(${getBeerPackagingLabel(item)})</span>` : ''}</td>
+      <td>${item.name}${getWineTypeBadge(item)}${state.activeTab === 'Beer' && getBeerPackagingLabel(item) ? ` <span class="packaging-badge">(${getBeerPackagingLabel(item)})</span>` : ''}</td>
       <td>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </td>
@@ -450,7 +461,7 @@ function renderTable() {
     card.dataset.itemId = String(item.id);
     card.innerHTML = `
       <div class="quick-card-head">
-        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}${state.activeTab === 'Beer' && getBeerPackagingLabel(item) ? ` <span class="packaging-badge">(${getBeerPackagingLabel(item)})</span>` : ''}</h3>
+        <h3 class="quick-name" title="${escapeHtml(item.name)}">${highlightName(item.name, state.filters.search)}${getWineTypeBadge(item)}${state.activeTab === 'Beer' && getBeerPackagingLabel(item) ? ` <span class="packaging-badge">(${getBeerPackagingLabel(item)})</span>` : ''}</h3>
         <span class="status-pill status-${item.status}">${item.status}</span>
       </div>
       <p class="quick-quantity" aria-label="Quantity ${item.quantity}">${item.quantity}</p>
@@ -516,6 +527,14 @@ function toggleMenuForRow(id) {
   if (isHidden) target.classList.remove('hidden');
 }
 
+function syncWineTypeInputVisibility() {
+  const isWine = $('#category').value === 'Wine';
+  wineTypeInputWrap.classList.toggle('hidden', !isWine);
+  if (!isWine) {
+    wineTypeInput.value = '';
+  }
+}
+
 function resetForm() {
   $('#item-id').value = '';
   $('#name').value = '';
@@ -524,8 +543,10 @@ function resetForm() {
   $('#unit').value = 'Bottle';
   $('#status').value = 'FULL';
   $('#par_level').value = '0';
+  wineTypeInput.value = '';
   $('#notes').value = '';
   $('#form-error').textContent = '';
+  syncWineTypeInputVisibility();
 }
 
 function normalizeUnitValue(unitValue) {
@@ -560,8 +581,10 @@ function openEditModal(item) {
   $('#unit').value = normalizeUnitValue(item.unit);
   $('#status').value = item.status;
   $('#par_level').value = item.par_level;
+  wineTypeInput.value = item.wine_type || '';
   $('#notes').value = item.notes || '';
   $('#form-error').textContent = '';
+  syncWineTypeInputVisibility();
   itemDialog.showModal();
 }
 
@@ -575,8 +598,12 @@ function getItemById(id) {
 }
 
 function updateUndoRedoButtons() {
-  $('#undo-btn').disabled = undoStack.length === 0;
-  $('#redo-btn').disabled = redoStack.length === 0;
+  const canUndo = undoStack.length > 0;
+  const canRedo = redoStack.length > 0;
+  $('#undo-btn').disabled = !canUndo;
+  $('#redo-btn').disabled = !canRedo;
+  if (mobileUndoBtn) mobileUndoBtn.disabled = !canUndo;
+  if (mobileRedoBtn) mobileRedoBtn.disabled = !canRedo;
 }
 
 function pushUndoAction(action) {
@@ -705,11 +732,7 @@ function wireKeyboardShortcuts() {
 
 function wireStickyTopBar() {
   function updateStickyState() {
-    if (isMobileQuickMode()) {
-      topBar.classList.remove('is-sticky');
-      return;
-    }
-    topBar.classList.toggle('is-sticky', window.scrollY > 8);
+    stickyControls.classList.toggle('is-sticky', window.scrollY > 8);
   }
 
   window.addEventListener('scroll', updateStickyState, { passive: true });
@@ -790,6 +813,7 @@ async function handleSave(event) {
     unit: $('#unit').value,
     status: $('#status').value,
     par_level: Number($('#par_level').value),
+    wine_type: wineTypeInput.value,
     notes: $('#notes').value
   };
 
@@ -1140,13 +1164,17 @@ function init() {
   wireMobileLongPressEdit();
 
   $('#add-item-btn').addEventListener('click', openCreateModal);
+  if (mobileAddItemBtn) mobileAddItemBtn.addEventListener('click', openCreateModal);
   $('#undo-btn').addEventListener('click', handleUndo);
+  if (mobileUndoBtn) mobileUndoBtn.addEventListener('click', handleUndo);
   $('#redo-btn').addEventListener('click', handleRedo);
+  if (mobileRedoBtn) mobileRedoBtn.addEventListener('click', handleRedo);
   $('#export-full-btn').addEventListener('click', exportFullInventoryCsv);
   $('#export-order-btn').addEventListener('click', exportOrderListCsv);
   itemForm.addEventListener('submit', handleSave);
   $('#cancel-btn').addEventListener('click', () => itemDialog.close());
   $('#delete-btn').addEventListener('click', handleDeleteCurrentItem);
+  $('#category').addEventListener('change', syncWineTypeInputVisibility);
   $('#items-table tbody').addEventListener('click', handleRowAction);
   $('#mobile-quick-list').addEventListener('click', handleRowAction);
   $('#items-table tbody').addEventListener('change', handleStatusInlineChange);
