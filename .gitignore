@@ -1,0 +1,6 @@
+node_modules/
+
+# Runtime SQLite databases
+app-data/*.sqlite
+data/*.sqlite
+*.db

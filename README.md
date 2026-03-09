@@ -52,21 +52,36 @@ On first run, if the database is empty, the app seeds items like:
 
 ### How to change seed data
 
-Edit the `starterItems` array in `src/db.js`, then delete `data/bar_inventory.sqlite` and restart the app.
+- `src/data/masterInventory.js` is the canonical source-of-truth list for bar inventory metadata.
+- `src/data/seedInventory.js` derives default seeded app rows from `masterInventory` by adding starter state (`quantity: 1`, `status: 'FULL'`).
+- Run `npm run reset-inventory` to delete the current SQLite file, then run `npm run dev` to recreate/reseed on startup.
+
+### Database path for local vs cloud
+
+- The app reads the SQLite file path from `DB_PATH`.
+- If `DB_PATH` is not set, it uses `app-data/bar_inventory.sqlite` in local development.
+- The DB directory is auto-created if it does not exist.
 
 ## Project structure
 
 ```text
 .
-├── data/
-│   └── bar_inventory.sqlite (created at runtime)
+├── app-data/
+│   └── bar_inventory.sqlite (created at runtime unless DB_PATH is set)
 ├── public/
 │   ├── app.js
 │   ├── index.html
 │   └── styles.css
 ├── src/
+│   ├── config/
+│   │   └── dbPath.js
+│   ├── data/
+│   │   ├── masterInventory.js
+│   │   └── seedInventory.js
 │   ├── routes/
 │   │   └── items.js
+│   ├── scripts/
+│   │   └── resetInventory.js
 │   ├── services/
 │   │   └── itemsService.js
 │   ├── utils/

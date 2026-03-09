@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "reset-inventory": "node src/scripts/resetInventory.js"
   },
   "engines": {
     "node": ">=18"
