@@ -1,403 +1,169 @@
 const masterInventory = [
-  {
-    "name": "Redemption Bourbon",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon"
-  },
-  {
-    "name": "Michter's Bourbon",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon; Small Batch"
-  },
-  {
-    "name": "Pendleton Bourbon",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon; 10 Year"
-  },
-  {
-    "name": "Taffer's Brown Buttered Bourbon",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Bourbon"
-  },
-  {
-    "name": "Tin Cup Bourbon Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon Whiskey"
-  },
-  {
-    "name": "Green River Kentucky Bourbon Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon Whiskey; Kentucky"
-  },
-  {
-    "name": "Rabbit Hole Kentucky Bourbon Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon Whiskey; Kentucky"
-  },
-  {
-    "name": "2XO American Oak Bourbon Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon Whiskey; American Oak"
-  },
-  {
-    "name": "2XO Kentucky Bourbon Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon Whiskey; Kentucky; Phoenix Blend"
-  },
-  {
-    "name": "Yellowstone Bourbon Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Bourbon Whiskey"
-  },
-  {
-    "name": "Jameson Irish Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Irish Whiskey"
-  },
-  {
-    "name": "Redbreast Irish Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Irish Whiskey; 12 Year"
-  },
-  {
-    "name": "Pendleton Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Whiskey"
-  },
-  {
-    "name": "Stranahan's Blue Peak Colorado Single Malt Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Single Malt; Colorado"
-  },
-  {
-    "name": "George Dickel Tennessee Sour Mash Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Tennessee Whiskey; Sour Mash"
-  },
-  {
-    "name": "Crown Royal Apple Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Whiskey; Apple"
-  },
-  {
-    "name": "Jameson Orange",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Whiskey; Orange"
-  },
-  {
-    "name": "Demon Seed Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Whiskey; scorpion pepper, ginger, maple syrup"
-  },
-  {
-    "name": "Amador Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Cabernet Sauvignon barrel"
-  },
-  {
-    "name": "Woodinville Rye Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Rye Whiskey"
-  },
-  {
-    "name": "Templeton Rye Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Rye Whiskey"
-  },
-  {
-    "name": "Michter's Straight Rye Whiskey",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Rye Whiskey"
-  },
-  {
-    "name": "Johnnie Walker Black Label",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Scotch; 12 Year"
-  },
-  {
-    "name": "Johnnie Walker Red Label",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Scotch"
-  },
-  {
-    "name": "The Glenlivet Single Malt",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Single Malt Scotch; 12 Year"
-  },
-  {
-    "name": "Glenfiddich Single Malt",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Single Malt Scotch; 12 Year"
-  },
-  {
-    "name": "The Dalmore Single Malt",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Single Malt Scotch; 12 Year"
-  },
-  {
-    "name": "Compass Box The Peat Monster",
-    "category": "Whiskey",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Scotch"
-  },
-  {
-    "name": "Goslings",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Dark Rum"
-  },
-  {
-    "name": "Trader Vic's Spiced Rum",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Spiced Rum"
-  },
-  {
-    "name": "The Kraken",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Spiced Rum"
-  },
-  {
-    "name": "Trader Vic's Rum",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Light Rum (verify expression)"
-  },
-  {
-    "name": "Flor de Cana Extra Seco",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Light Rum"
-  },
-  {
-    "name": "Flor de Cana Gran Reserva",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Light Rum"
-  },
-  {
-    "name": "Rum Sons Coffee Flavored Rum",
-    "category": "Rum",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Rum; Coffee"
-  },
-  {
-    "name": "El Mayor",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Blanco; almost empty (verify)"
-  },
-  {
-    "name": "Cabrito",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Blanco"
-  },
-  {
-    "name": "Tromba",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Blanco"
-  },
-  {
-    "name": "Rosaluna",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Blanco"
-  },
-  {
-    "name": "1800 Coconut",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Tequila; Coconut"
-  },
-  {
-    "name": "House Infused Jalapeno Tequila",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Tequila; House-infused"
-  },
-  {
-    "name": "Don Julio Reposado",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Reposado"
-  },
-  {
-    "name": "Don Julio Anejo",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Anejo (verify expression)"
-  },
-  {
-    "name": "Tres Agaves Anejo",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Anejo (verify expression)"
-  },
-  {
-    "name": "Chamucos Anejo",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Anejo (verify expression)"
-  },
-  {
-    "name": "Cincoro Anejo",
-    "category": "Tequila",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Anejo (verify expression)"
-  },
-  {
-    "name": "Prairie Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": ""
-  },
-  {
-    "name": "Velo Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Verify exact product name"
-  },
-  {
-    "name": "Barr Hill",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Vermont; verify (often gin brand)"
-  },
-  {
-    "name": "Cold River Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": ""
-  },
-  {
-    "name": "Spring 44 Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": ""
-  },
-  {
-    "name": "Belvedere Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": ""
-  },
-  {
-    "name": "Ketel One Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": ""
-  },
-  {
-    "name": "House Infused Vanilla Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Vodka; House-infused"
-  },
-  {
-    "name": "Pearl Lemon Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Vodka; Lemon"
-  },
-  {
-    "name": "Prairie Cucumber Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Vodka; Cucumber"
-  },
-  {
-    "name": "Hanson Habanero Vodka",
-    "category": "Vodka",
-    "unit": "bottle",
-    "par_level": 0.9,
-    "notes": "Flavored Vodka; Habanero (verify expression)"
-  }
+  
+  // WHISKEY — BOURBON / BOURBON WHISKEY
+  { name: 'Redemption Bourbon', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon' },
+  { name: 'Michter’s Bourbon', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon; Small Batch' },
+  { name: 'Pendleton Bourbon', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon; 10 Year' },
+  { name: 'Taffer’s Brown Buttered Bourbon', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Bourbon' },
+  { name: 'Tin Cup Bourbon Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon Whiskey' },
+  { name: 'Green River Kentucky Bourbon Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon Whiskey' },
+  { name: 'Rabbit Hole Kentucky Bourbon Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon Whiskey' },
+  { name: '2XO American Oak Bourbon Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon Whiskey' },
+  { name: '2XO Kentucky Bourbon Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon Whiskey; Phoenix Blend' },
+  { name: 'Yellowstone Bourbon Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Bourbon Whiskey' },
+
+  // WHISKEY — OTHER
+  { name: 'Jameson Irish Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Irish Whiskey' },
+  { name: 'Redbreast Irish Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Irish Whiskey; 12 Year' },
+  { name: 'Pendleton Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Whiskey' },
+  { name: 'Stranahan’s Blue Peak Colorado Single Malt Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Single Malt Whiskey' },
+  { name: 'George Dickel Tennessee Sour Mash Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Tennessee Whiskey' },
+  { name: 'Crown Royal Apple Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Whiskey; Apple' },
+  { name: 'Jameson Orange', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Whiskey; Orange' },
+  { name: 'Demon Seed Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Whiskey; Scorpion Pepper, Ginger, Maple Syrup' },
+  { name: 'Amador Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Whiskey; Cabernet Sauvignon Barrel; VERIFY spelling/expression' },
+
+  // WHISKEY — RYE
+  { name: 'Woodinville Rye Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Rye Whiskey' },
+  { name: 'Templeton Rye Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Rye Whiskey' },
+  { name: 'Michter’s Straight Rye Whiskey', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Rye Whiskey' },
+
+  // WHISKEY — SCOTCH
+  { name: 'Johnnie Walker Black Label', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Scotch; 12 Year' },
+  { name: 'Johnnie Walker Red Label', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Scotch' },
+  { name: 'The Glenlivet Single Malt Scotch Whisky', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Scotch; 12 Year' },
+  { name: 'Glenfiddich Single Malt Scotch Whisky', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Scotch; 12 Year' },
+  { name: 'The Dalmore Single Malt Scotch Whisky', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Scotch; 12 Year' },
+  { name: 'Compass Box The Peat Monster', category: 'Whiskey', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Scotch' },
+
+  // RUM
+  { name: 'Goslings', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Dark Rum' },
+  { name: 'Trader Vic’s Spiced Rum', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Spiced Rum' },
+  { name: 'The Kraken', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Spiced Rum' },
+  { name: 'Trader Vic’s Rum', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Light Rum; VERIFY exact expression' },
+  { name: 'Flor de Caña Extra Seco', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Light Rum' },
+  { name: 'Flor de Caña Gran Reserva', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Light Rum' },
+  { name: 'Rum Sons Coffee Flavored Rum', category: 'Rum', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Rum; Coffee' },
+
+  // TEQUILA
+  { name: 'El Mayor', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Blanco; Almost Empty noted on original list' },
+  { name: 'Cabrito', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Blanco' },
+  { name: 'Tromba', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Blanco' },
+  { name: 'Rosaluna', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Blanco' },
+  { name: '1800 Coconut', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Tequila' },
+  { name: 'House Infused Jalapeño Tequila', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Tequila; House Infused' },
+  { name: 'Don Julio Reposado', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Reposado' },
+  { name: 'Don Julio Añejo', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Añejo' },
+  { name: 'Tres Agaves Añejo', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Añejo' },
+  { name: 'Chamucos Añejo', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Añejo' },
+  { name: 'Cincoro Añejo', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Añejo' },
+
+  // VODKA
+  { name: 'Prairie Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Velo Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'VERIFY exact expression' },
+  { name: 'Barr Hill Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Vermont; VERIFY product type' },
+  { name: 'Cold River Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Spring 44 Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Belvedere Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Ketel One Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'House Infused Vanilla Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Vodka; House Infused' },
+  { name: 'Pearl Lemon Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Vodka' },
+  { name: 'Prairie Cucumber Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Vodka' },
+  { name: 'Hanson Habanero Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Vodka' },
+
+  // GIN
+  { name: 'Prairie Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Koval Dry Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Dry Gin' },
+  { name: 'Nolet’s Silver Dry Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Holland' },
+  { name: 'Boston Harbor Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Bombay Sapphire London Dry Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'London Dry' },
+  { name: 'Empress Indigo Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored/Infused Gin; Pea Flower' },
+  { name: 'Empress Elderflower Rose Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Gin' },
+  { name: 'Empress Cucumber Lemon Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Gin' },
+  { name: 'Dry Line Cape Cod Rose Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Gin; 35% Rosé Blend' },
+  { name: 'Malfy Rosa Grapefruit Gin', category: 'Gin', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Flavored Gin; Italy' },
+
+  // MISC / OTHER
+  { name: 'Capel Pisco Reservado', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Brandy/Pisco; Made From Grapes; VERIFY exact expression' },
+  { name: 'Novo Fogo Barrel-Aged Cachaça', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Cachaça; Brazilian Liquor' },
+  { name: 'Pitú Cachaça', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Cachaça; Brazilian Liquor' },
+  { name: 'La Fée Absinthe Parisienne', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Absinthe' },
+  { name: 'Lucid Absinthe Supérieure', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Absinthe' },
+  { name: 'Ming River Sichuan Baijiu', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Baijiu' },
+  { name: 'Tyku Japanese Sake', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Sake' },
+  { name: 'Taylor New York Port', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Port' },
+  { name: 'Rémy Martin VSOP Cognac', category: 'Other', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Cognac; Champagne; Very Special Old Pale; VERIFY exact label' },
+
+  // LIQUEURS
+  { name: 'Amaro Nonino', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaro' },
+  { name: 'Amaro Marino', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaro; VERIFY spelling/brand' },
+  { name: 'Amaro dell’Etna', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaro' },
+  { name: 'Foro Amaro', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaro' },
+  { name: 'Hiram Walker Amaretto', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaretto' },
+  { name: 'Gozio Amaretto', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaretto' },
+  { name: 'Cointreau', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Orange Liqueur' },
+  { name: 'Triple Sec', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Orange Liqueur' },
+  { name: 'Spritzatto', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'VERIFY exact product type' },
+  { name: 'House Made Campari', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'House Made Bitter/Aperitivo' },
+  { name: 'Campari Milano', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Aperitivo; VERIFY exact label' },
+  { name: 'Baileys', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Cream Liqueur' },
+  { name: 'Kahlúa', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Coffee Liqueur' },
+  { name: 'Dunkin Caramel Kahlúa', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Coffee Liqueur' },
+  { name: 'The Bitter Truth Pimento Dram', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Allspice Dram' },
+  { name: 'Trader Vic’s Macadamia Nut Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Nut Liqueur' },
+  { name: 'St. Elder Pamplemousse Pink Grapefruit Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Grapefruit Liqueur' },
+  { name: 'Florence Elderflower Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Elderflower Liqueur' },
+  { name: 'Priqly Prickly Pear Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Prickly Pear Liqueur; VERIFY spelling/brand' },
+  { name: 'California Falernum', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Falernum' },
+  { name: 'Amarula', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Marula Cream Liqueur' },
+  { name: 'Stirrings Pomegranate', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Pomegranate Liqueur; VERIFY product type' },
+  { name: 'Bols Amsterdam Melon Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Melon Liqueur; Original list said almost gone' },
+  { name: 'Midori Melon Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Melon Liqueur' },
+  { name: 'Fernet-Branca', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Amaro' },
+  { name: 'Combier Banana Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Banana Liqueur' },
+  { name: 'Licor 43', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Botanical Citrus Liqueur' },
+  { name: 'Marie Brizard Apry Apricot Liqueur', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Apricot Liqueur' },
+  { name: 'Crème de Cacao', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Chocolate Liqueur; Original note said one dark and one clear' },
+  { name: 'Blue Curaçao', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Orange Liqueur' },
+  { name: 'Sloe Gin', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Sloe Berry Liqueur' },
+  { name: 'House Made Limoncello', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'House Made' },
+  { name: 'Galliano L’Autentico', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Sweet Italian Liqueur' },
+  { name: 'Peach Schnapps', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Schnapps' },
+  { name: 'Peppermint Schnapps', category: 'Liqueur', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Schnapps' },
+
+  // HOUSE-CURATED WINES
+  { name: 'Vandori Prosecco', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Prosecco – Italy' },
+  { name: 'Alverdi Organic Pinot Grigio', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Pinot Grigio – Italy' },
+  { name: 'Matua Sauvignon Blanc', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Sauvignon Blanc – New Zealand' },
+  { name: 'Twenty Acres Chardonnay', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Chardonnay – California' },
+  { name: 'Domaine Bernier Chardonnay', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Chardonnay – France' },
+  { name: 'Terres Gauda Albariño', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Albariño – Spain' },
+  { name: 'Fess Parker Riesling', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Riesling – California' },
+  { name: 'Domaine Laroche Rosé', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Rosé – France' },
+
+  // RED WINES
+  { name: 'Trinity Oaks Pinot Noir', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Pinot Noir – California' },
+  { name: 'El Coto Organic Tempranillo Crianza', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Tempranillo – Spain' },
+  { name: 'Terrazas Altos Malbec', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Malbec – Argentina' },
+  { name: 'Charles & Charles Double Trouble Red', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Syrah/Cabernet Sauvignon Blend – Washington' },
+  { name: 'Freakshow Zinfandel', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Zinfandel – California' },
+  { name: 'Hedges CMS Cabernet Sauvignon', category: 'Wine', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Cabernet Sauvignon – Washington' },
+
+  // SYRUPS + MIXERS
+  { name: 'Demerara Syrup', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'House syrup' },
+  { name: 'Falernum', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Spiced syrup/liqueur style mixer' },
+  { name: 'Cranberry Juice', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Juice mixer' },
+  { name: 'Dry Vermouth', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Fortified wine' },
+  { name: 'Guava Syrup', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Fruit syrup' },
+  { name: 'Lavender Syrup', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Floral syrup' },
+  { name: 'Lemon Juice', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Fresh juice mixer' },
+  { name: 'Lime Juice', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Fresh juice mixer' },
+  { name: 'Shrub', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Vinegar-based cocktail syrup' },
+  { name: 'Simple Syrup', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'House simple syrup' },
+  { name: 'Sweet Vermouth', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Fortified wine' },
+  { name: 'Toledo Pepper Jam', category: 'Syrups+', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Savory cocktail ingredient' },
+
+
 ];
 
 module.exports = masterInventory;
