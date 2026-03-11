@@ -158,7 +158,7 @@ function applyTabConstraints(tab, uiState) {
 
   if (tab === 'Wine') {
     nextState.category = 'Wine';
-    if (!['All', 'Red', 'White'].includes(nextState.wineType)) {
+    if (!['All', 'Red', 'White', 'Sparkling', 'Rose'].includes(nextState.wineType)) {
       nextState.wineType = 'All';
     }
     return nextState;
@@ -342,6 +342,8 @@ function matchesWineType(item, wineType) {
   if (!notes.trim()) return false;
   if (wineType === 'Red') return notes.includes('red');
   if (wineType === 'White') return notes.includes('white');
+  if (wineType === 'Sparkling') return notes.includes('sparkling') || notes.includes('prosecco') || notes.includes('champagne') || notes.includes('cava');
+  if (wineType === 'Rose') return notes.includes('rose') || notes.includes('rosé');
   return true;
 }
 
