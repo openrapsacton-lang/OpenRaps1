@@ -20,6 +20,7 @@ function fetchItemById(id) {
 
 function calculateAutoStatus(currentStatus, quantity, parLevel) {
   if (currentStatus === 'DISCONTINUED') return 'DISCONTINUED';
+  if (currentStatus === 'ORDERED') return 'ORDERED';
   if (quantity === 0) return 'OUT';
   if (quantity <= parLevel) return 'LOW';
   return 'FULL';
