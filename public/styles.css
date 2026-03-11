@@ -666,6 +666,17 @@ body.mobile-quick-mode .mobile-top-actions {
   color: #92400e;
 }
 
+
+.wine-type-sparkling {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.wine-type-rose {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
 .inventory-content {
   position: relative;
   z-index: 1;

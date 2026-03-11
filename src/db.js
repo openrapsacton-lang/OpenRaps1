@@ -56,6 +56,8 @@ function initDb() {
   db.prepare(`
     UPDATE items
     SET wine_type = CASE
+      WHEN LOWER(notes) LIKE '%sparkling%' OR LOWER(notes) LIKE '%prosecco%' OR LOWER(notes) LIKE '%champagne%' OR LOWER(notes) LIKE '%cava%' THEN 'Sparkling'
+      WHEN LOWER(notes) LIKE '%rosé%' OR LOWER(notes) LIKE '%rose%' THEN 'Rose'
       WHEN LOWER(notes) LIKE '%red%' THEN 'Red'
       WHEN LOWER(notes) LIKE '%white%' THEN 'White'
       ELSE wine_type

@@ -16,7 +16,7 @@ const VALID_CATEGORIES = [
 ];
 
 const VALID_STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
-const VALID_WINE_TYPES = ['Red', 'White'];
+const VALID_WINE_TYPES = ['Red', 'White', 'Sparkling', 'Rose'];
 
 module.exports = {
   VALID_CATEGORIES,
