@@ -233,6 +233,15 @@ th, td {
   cursor: pointer;
 }
 
+.btn,
+.tab-btn,
+.clear-search-btn,
+.mobile-sort-option {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
