@@ -504,10 +504,10 @@ function renderTable() {
         <div class="row-actions">
             <button class="btn" data-action="minus" data-id="${item.id}">-1</button>
             <button class="btn" data-action="plus" data-id="${item.id}">+1</button>
-            <button class="btn" data-action="plus10" data-id="${item.id}">+10</button>
-            <button class="btn" data-action="mark-low" data-id="${item.id}">Low</button>
-            <button class="btn" data-action="mark-full" data-id="${item.id}">Full</button>
+            <button class="btn" data-action="plus6" data-id="${item.id}">+6</button>
             <button class="btn" data-action="mark-out" data-id="${item.id}">OUT</button>
+            <button class="btn" data-action="mark-low" data-id="${item.id}">LOW</button>
+            <button class="btn" data-action="full" data-id="${item.id}">FULL</button>
             <button class="btn" data-action="edit" data-id="${item.id}">Edit</button>
             <button class="btn" data-action="history" data-id="${item.id}">History</button>
             <select data-action="status" data-id="${item.id}">
@@ -531,9 +531,10 @@ function renderTable() {
       <div class="quick-actions">
         <button class="btn quick-btn" data-action="minus" data-id="${item.id}">-1</button>
         <button class="btn quick-btn" data-action="plus" data-id="${item.id}">+1</button>
-        <button class="btn quick-btn" data-action="plus10" data-id="${item.id}">+10</button>
-        <button class="btn quick-btn" data-action="mark-low" data-id="${item.id}">LOW</button>
+        <button class="btn quick-btn" data-action="plus6" data-id="${item.id}">+6</button>
         <button class="btn quick-btn" data-action="mark-out" data-id="${item.id}">OUT</button>
+        <button class="btn quick-btn" data-action="mark-low" data-id="${item.id}">LOW</button>
+        <button class="btn quick-btn" data-action="full" data-id="${item.id}">FULL</button>
       </div>
     `;
     mobileQuickList.appendChild(card);
@@ -933,6 +934,12 @@ async function handleDeleteCurrentItem() {
   }
 }
 
+function getFullQuantityFromPar(item) {
+  const par = Number(item?.par_level ?? item?.par);
+  if (!Number.isFinite(par) || par < 0) return null;
+  return Math.ceil(par);
+}
+
 async function handleRowAction(event) {
   const action = event.target.dataset.action;
   const id = event.target.dataset.id;
@@ -962,25 +969,40 @@ async function handleRowAction(event) {
       showToast('Quantity updated.');
     }
 
-    if (action === 'plus10') {
+    if (action === 'plus6') {
       const beforeSnapshot = cloneItem(item);
       afterSnapshot = await api(`/api/items/${id}/quantity`, {
         method: 'PATCH',
-        body: JSON.stringify({ delta: 10 })
+        body: JSON.stringify({ delta: 6 })
       });
       pushUndoAction({ type: 'quantity', beforeSnapshot, afterSnapshot: cloneItem(afterSnapshot) });
-      showToast('Quantity increased by 10.');
+      showToast('Quantity increased by 6.');
     }
 
-    if (action === 'mark-low' || action === 'mark-full') {
+    if (action === 'mark-low') {
       const beforeSnapshot = cloneItem(item);
-      const status = action === 'mark-low' ? 'LOW' : 'FULL';
       afterSnapshot = await api(`/api/items/${id}/status`, {
         method: 'PATCH',
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status: 'LOW' })
       });
       pushUndoAction({ type: 'status', beforeSnapshot, afterSnapshot: cloneItem(afterSnapshot) });
-      showToast(`Status updated to ${status}.`);
+      showToast('Status updated to LOW.');
+    }
+
+    if (action === 'full') {
+      const nextQuantity = getFullQuantityFromPar(item);
+      if (nextQuantity === null) {
+        console.warn(`Cannot set FULL without a valid par level for item ${id}.`);
+        return;
+      }
+
+      const beforeSnapshot = cloneItem(item);
+      afterSnapshot = await api(`/api/items/${id}/quantity`, {
+        method: 'PATCH',
+        body: JSON.stringify({ quantity: nextQuantity })
+      });
+      pushUndoAction({ type: 'quantity', beforeSnapshot, afterSnapshot: cloneItem(afterSnapshot) });
+      showToast('Quantity set to par.');
     }
 
     if (action === 'mark-out') {
