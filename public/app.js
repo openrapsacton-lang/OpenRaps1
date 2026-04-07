@@ -67,6 +67,11 @@ const mobileUndoBtn = $('#mobile-undo-btn');
 const mobileRedoBtn = $('#mobile-redo-btn');
 const mobileSortBtn = $('#mobile-sort-btn');
 const mobileSortMenu = $('#mobile-sort-menu');
+const inventoryContent = document.querySelector('.inventory-content');
+
+const SWIPE_MIN_DISTANCE = 60;
+const SWIPE_MAX_VERTICAL_DRIFT = 44;
+const SWIPE_DOMINANCE_RATIO = 1.35;
 
 
 function fillSelect(selectEl, values, includeAll = false) {
@@ -323,6 +328,58 @@ function switchTab(newTab) {
   updateTabButtons();
   persistTabPreferences();
   loadItems();
+}
+
+function isSwipeNavigationEligibleTarget(target) {
+  if (!target) return false;
+  return !target.closest('input, textarea, select, button, a, label, dialog, .mobile-sort-menu');
+}
+
+function wireMobileTabSwipeNavigation() {
+  if (!inventoryContent) return;
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let swipeEligible = false;
+
+  inventoryContent.addEventListener('touchstart', (event) => {
+    if (!isMobileQuickMode() || !isMobilePortraitMode()) return;
+    if (!event.changedTouches || event.changedTouches.length === 0) return;
+
+    swipeEligible = isSwipeNavigationEligibleTarget(event.target);
+    if (!swipeEligible) return;
+
+    const touch = event.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+
+  inventoryContent.addEventListener('touchend', (event) => {
+    if (!swipeEligible) return;
+    if (!event.changedTouches || event.changedTouches.length === 0) return;
+
+    swipeEligible = false;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    const isHorizontalSwipe = absX >= SWIPE_MIN_DISTANCE
+      && absY <= SWIPE_MAX_VERTICAL_DRIFT
+      && absX > absY * SWIPE_DOMINANCE_RATIO;
+
+    if (!isHorizontalSwipe) return;
+
+    const currentIndex = TAB_KEYS.indexOf(state.activeTab);
+    if (currentIndex === -1) return;
+
+    const direction = deltaX < 0 ? 1 : -1;
+    const nextIndex = Math.min(TAB_KEYS.length - 1, Math.max(0, currentIndex + direction));
+    if (nextIndex === currentIndex) return;
+
+    switchTab(TAB_KEYS[nextIndex]);
+  }, { passive: true });
 }
 
 function detectBeerPackaging(item) {
@@ -1294,6 +1351,7 @@ function init() {
   wireKeyboardShortcuts();
   wireStickyTopBar();
   wireMobileLongPressEdit();
+  wireMobileTabSwipeNavigation();
 
   $('#add-item-btn').addEventListener('click', openCreateModal);
   if (mobileAddItemBtn) mobileAddItemBtn.addEventListener('click', openCreateModal);
