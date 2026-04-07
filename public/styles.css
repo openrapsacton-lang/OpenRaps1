@@ -13,11 +13,6 @@ body {
 }
 
 
-.top-bar-wrap {
-  background: transparent;
-  margin-bottom: 0.35rem;
-}
-
 .sticky-controls-wrap {
   position: sticky;
   top: 0;
@@ -25,38 +20,11 @@ body {
   background: rgba(248, 250, 252, 0.97);
   border-bottom: 1px solid #dbeafe;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  padding-top: 0.3rem;
+  padding-top: 0;
 }
 
 .sticky-controls-wrap.is-sticky {
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
-}
-
-.header-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.0rem;
-}
-
-.undo-redo-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.export-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.7rem;
-  margin-bottom: 0.65rem;
 }
 
 
@@ -149,6 +117,14 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 0.75rem;
 }
+
+.desktop-toolbar-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 
 label {
   font-size: 0.9rem;
@@ -492,11 +468,6 @@ body.mobile-quick-mode {
   padding: 0.6rem;
 }
 
-body.mobile-quick-mode .top-bar-wrap {
-  position: static;
-  margin-bottom: 0.35rem;
-}
-
 body.mobile-quick-mode .sticky-controls-wrap {
   top: 0;
   z-index: 40;
@@ -505,9 +476,9 @@ body.mobile-quick-mode .sticky-controls-wrap {
   background: rgba(248, 250, 252, 0.98);
 }
 
-body.mobile-quick-mode .page-header .header-actions,
 body.mobile-quick-mode .controls label:not(:first-child),
-body.mobile-quick-mode .desktop-table-card {
+body.mobile-quick-mode .desktop-table-card,
+body.mobile-quick-mode .desktop-toolbar-actions {
   display: none;
 }
 
@@ -582,24 +553,6 @@ body.mobile-quick-mode #empty-state {
   }
 }
 
-
-@media (max-width: 640px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .page-header .btn {
-    width: 100%;
-  }
-
-  .header-actions,
-  .undo-redo-actions,
-  .export-actions {
-    width: 100%;
-    align-items: stretch;
-  }
-}
 
 
 body.mobile-quick-mode .controls label#wine-type-wrap,

@@ -7,29 +7,10 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <div id="top-bar" class="top-bar-wrap">
-      <header class="page-header">
-        <div>
-          <h1>Beta Testing Local Hosting - Acton Bar Inventory</h1>
-          <p>Track bottles, quantities, and stock status.</p>
-        </div>
-        <div class="header-actions">
-          <button id="add-item-btn" class="btn primary">+ Add Item</button>
-          <div class="undo-redo-actions">
-            <button id="undo-btn" class="btn" disabled>Undo</button>
-            <button id="redo-btn" class="btn" disabled>Redo</button>
-          </div>
-          <div class="export-actions">
-            <button id="export-full-btn" class="btn">Export Full Inventory (CSV)</button>
-            <button id="export-order-btn" class="btn">Export Order List (CSV)</button>
-          </div>
-        </div>
-      </header>
-    </div>
-
     <div id="sticky-controls" class="sticky-controls-wrap">
       <nav class="tabs-wrap" aria-label="Inventory Views">
         <button class="tab-btn active" data-tab="Total Stock" type="button">Total Stock</button>
+        <button class="tab-btn" data-tab="Well Stock" type="button">Well Stock</button>
         <button class="tab-btn" data-tab="Liquor" type="button">Liquor</button>
         <button class="tab-btn" data-tab="Wine" type="button">Wine</button>
         <button class="tab-btn" data-tab="Beer" type="button">Beer</button>
@@ -67,6 +48,14 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="desktop-toolbar-actions" aria-label="Desktop actions">
+          <button id="add-item-btn" class="btn primary" type="button">+ Add Item</button>
+          <button id="undo-btn" class="btn" type="button" disabled>Undo</button>
+          <button id="redo-btn" class="btn" type="button" disabled>Redo</button>
+          <button id="export-full-btn" class="btn" type="button">Export Full Inventory (CSV)</button>
+          <button id="export-order-btn" class="btn" type="button">Export Order List (CSV)</button>
         </div>
 
         <label>
