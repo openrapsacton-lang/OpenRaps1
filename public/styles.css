@@ -386,7 +386,7 @@ menu {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 10px 26px rgba(30, 41, 59, 0.08);
-  padding: 0.95rem;
+  padding: 0.72rem;
   border: 1px solid #e5e7eb;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
@@ -421,13 +421,13 @@ menu {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.45rem;
 }
 
 .quick-name {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.3;
+  font-size: 0.98rem;
+  line-height: 1.24;
 }
 
 .quick-name mark {
@@ -438,8 +438,8 @@ menu {
 }
 
 .quick-quantity {
-  margin: 0.8rem 0;
-  font-size: 2rem;
+  margin: 0.52rem 0;
+  font-size: 1.72rem;
   line-height: 1;
   font-weight: 700;
 }
@@ -447,12 +447,13 @@ menu {
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 0.38rem;
 }
 
 .quick-btn {
-  min-height: 46px;
+  min-height: 42px;
   font-weight: 700;
+  padding: 0.4rem 0.35rem;
 }
 
 .action-flash {
