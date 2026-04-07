@@ -1,7 +1,7 @@
-const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'Syrups+', 'NA', 'Other'];
+const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Well', 'Wine', 'Beer', 'Syrups+', 'NA', 'Other'];
 const STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
 
-const TAB_KEYS = ['Total Stock', 'Liquor', 'Wine', 'Beer', 'Syrups+'];
+const TAB_KEYS = ['Total Stock', 'Well Stock', 'Liquor', 'Wine', 'Beer', 'Syrups+'];
 const LIQUOR_CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur'];
 const TAB_STORAGE_KEY = 'barInventoryTabStateV1';
 const UNIT_OPTIONS = ['Bottle', 'Keg', '4Pk', 'Can'];
@@ -21,6 +21,7 @@ function createDefaultTabState() {
 function createDefaultAllTabState() {
   return {
     'Total Stock': createDefaultTabState(),
+    'Well Stock': { ...createDefaultTabState(), category: 'Well' },
     Liquor: { ...createDefaultTabState(), category: '' },
     Wine: { ...createDefaultTabState(), category: 'Wine', wineType: 'All' },
     Beer: { ...createDefaultTabState(), category: 'Beer', beerPackaging: 'All' },
@@ -149,6 +150,11 @@ function applyTabConstraints(tab, uiState) {
     return nextState;
   }
 
+  if (tab === 'Well Stock') {
+    nextState.category = 'Well';
+    return nextState;
+  }
+
   if (tab === 'Liquor') {
     if (nextState.category && !LIQUOR_CATEGORIES.includes(nextState.category)) {
       nextState.category = '';
@@ -181,6 +187,12 @@ function applyTabConstraints(tab, uiState) {
 
 function syncCategoryFilterForActiveTab(preferredCategory = '') {
   const categoryFilter = $('#category-filter');
+
+  if (state.activeTab === 'Well Stock') {
+    fillSelect(categoryFilter, ['Well'], false);
+    categoryFilter.value = 'Well';
+    return;
+  }
 
   if (state.activeTab === 'Liquor') {
     fillSelect(categoryFilter, LIQUOR_CATEGORIES, true);
@@ -369,6 +381,10 @@ function getEffectiveQueryParamsFromUI() {
 
 function applyClientFilters(items) {
   return items.filter((item) => {
+    if (state.activeTab === 'Well Stock' && item.category !== 'Well') {
+      return false;
+    }
+
     if (state.activeTab === 'Liquor' && !LIQUOR_CATEGORIES.includes(item.category)) {
       return false;
     }
