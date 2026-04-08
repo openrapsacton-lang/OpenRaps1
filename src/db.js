@@ -15,6 +15,7 @@ function initDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       category TEXT NOT NULL,
+      is_well INTEGER NOT NULL DEFAULT 0 CHECK (is_well IN (0, 1)),
       quantity REAL NOT NULL DEFAULT 0 CHECK (quantity >= 0),
       unit TEXT NOT NULL DEFAULT 'bottle',
       status TEXT NOT NULL,
@@ -45,6 +46,10 @@ function initDb() {
   if (!hasWineType) {
     db.exec("ALTER TABLE items ADD COLUMN wine_type TEXT DEFAULT ''");
   }
+  const hasIsWell = itemColumns.some((column) => column.name === 'is_well');
+  if (!hasIsWell) {
+    db.exec('ALTER TABLE items ADD COLUMN is_well INTEGER NOT NULL DEFAULT 0 CHECK (is_well IN (0, 1))');
+  }
 
   db.prepare(`
     UPDATE items
@@ -68,8 +73,8 @@ function initDb() {
   const count = db.prepare('SELECT COUNT(*) AS count FROM items').get().count;
   if (count === 0) {
     const insertItem = db.prepare(`
-      INSERT INTO items (name, category, quantity, unit, status, par_level, wine_type, notes)
-      VALUES (@name, @category, @quantity, @unit, @status, @par_level, @wine_type, @notes)
+      INSERT INTO items (name, category, is_well, quantity, unit, status, par_level, wine_type, notes)
+      VALUES (@name, @category, @is_well, @quantity, @unit, @status, @par_level, @wine_type, @notes)
     `);
     const insertEvent = db.prepare(`
       INSERT INTO events (item_id, action, details_json)
@@ -78,7 +83,11 @@ function initDb() {
 
     const seedTxn = db.transaction((items) => {
       for (const item of items) {
-        const result = insertItem.run({ wine_type: '', ...item });
+        const result = insertItem.run({
+          ...item,
+          wine_type: item.wine_type || '',
+          is_well: item.is_well ? 1 : 0
+        });
         insertEvent.run(result.lastInsertRowid, JSON.stringify(item));
       }
     });

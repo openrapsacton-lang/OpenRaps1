@@ -15,7 +15,8 @@ function logEvent(itemId, action, details) {
 }
 
 function fetchItemById(id) {
-  return db.prepare('SELECT * FROM items WHERE id = ?').get(id);
+  const row = db.prepare('SELECT * FROM items WHERE id = ?').get(id);
+  return normalizeItem(row);
 }
 
 function calculateAutoStatus(currentStatus, quantity, parLevel) {
@@ -69,16 +70,16 @@ function listItems({ search, category, status, sort = 'status', order = 'desc' }
     ORDER BY ${primarySort} ${primaryOrder}, LOWER(name) ASC, id ASC
   `;
 
-  return db.prepare(query).all(...params);
+  return db.prepare(query).all(...params).map(normalizeItem);
 }
 
 function createItem(payload) {
   const autoStatus = calculateAutoStatus(payload.status, payload.quantity, payload.par_level);
-  const input = { ...payload, status: autoStatus };
+  const input = { ...payload, status: autoStatus, is_well: payload.is_well ? 1 : 0 };
 
   const stmt = db.prepare(`
-    INSERT INTO items (name, category, quantity, unit, status, par_level, wine_type, notes)
-    VALUES (@name, @category, @quantity, @unit, @status, @par_level, @wine_type, @notes)
+    INSERT INTO items (name, category, is_well, quantity, unit, status, par_level, wine_type, notes)
+    VALUES (@name, @category, @is_well, @quantity, @unit, @status, @par_level, @wine_type, @notes)
   `);
 
   const result = stmt.run(input);
@@ -102,6 +103,7 @@ function updateItem(id, payload) {
   const updated = {
     ...existing,
     ...payload,
+    is_well: payload.is_well ? 1 : 0,
     status: computedStatus,
     updated_at: datetimeNowIso()
   };
@@ -110,6 +112,7 @@ function updateItem(id, payload) {
     UPDATE items
     SET name = @name,
         category = @category,
+        is_well = @is_well,
         quantity = @quantity,
         unit = @unit,
         status = @status,
@@ -202,6 +205,14 @@ function listItemEvents(itemId) {
     ORDER BY datetime(created_at) DESC, id DESC
     LIMIT 100
   `).all(itemId);
+}
+
+function normalizeItem(item) {
+  if (!item) return null;
+  return {
+    ...item,
+    is_well: Boolean(item.is_well)
+  };
 }
 
 function datetimeNowIso() {

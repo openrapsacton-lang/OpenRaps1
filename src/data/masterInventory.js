@@ -59,7 +59,7 @@ const masterInventory = [
   { name: 'Cincoro Añejo', category: 'Tequila', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Añejo' },
 
   // VODKA
-  { name: 'Prairie Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
+  { name: 'Prairie Vodka', category: 'Vodka', is_well: true, quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
   { name: 'Velo Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'VERIFY exact expression' },
   { name: 'Barr Hill Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: 'Vermont; VERIFY product type' },
   { name: 'Cold River Vodka', category: 'Vodka', quantity: 1, unit: 'bottle', status: 'FULL', par_level: 0.9, notes: '' },
