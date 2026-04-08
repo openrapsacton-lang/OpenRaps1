@@ -2,6 +2,9 @@
   font-family: Inter, system-ui, -apple-system, sans-serif;
   color: #1f2937;
   background: #f5f7fb;
+  --page-gutter: 0.65rem;
+  --page-gutter-mobile: 0.4rem;
+  --card-gap: 0.75rem;
 }
 
 * { box-sizing: border-box; }
@@ -20,7 +23,7 @@ body {
   background: rgba(248, 250, 252, 0.97);
   border-bottom: 1px solid #dbeafe;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  padding-top: 0;
+  padding: 0 var(--page-gutter) 0;
 }
 
 .sticky-controls-wrap.is-sticky {
@@ -30,8 +33,8 @@ body {
 
 
 #sticky-controls .controls {
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
+  padding: 0.65rem;
+  margin-bottom: var(--card-gap);
   border: 1px solid #dbeafe;
 }
 
@@ -42,40 +45,7 @@ body {
 .tabs-wrap {
   display: flex;
   gap: 0.55rem;
-  margin: 0 0 0.55rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: thin;
-  padding-bottom: 0.15rem;
-}
-
-.tab-btn {
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  color: #334155;
-  font-weight: 600;
-  flex: 0 0 auto;
-}
-
-.tab-btn.active {
-  background: #4f46e5;
-  color: #ffffff;
-  border-color: #4f46e5;
-}
-
-.packaging-badge {
-  color: #475569;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-
-.tabs-wrap {
-  display: flex;
-  gap: 0.55rem;
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.5rem;
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: thin;
@@ -108,7 +78,7 @@ body {
   background: #ffffff;
   border-radius: 12px;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--card-gap);
   box-shadow: 0 10px 26px rgba(30, 41, 59, 0.08);
 }
 
@@ -643,7 +613,7 @@ body.mobile-quick-mode .mobile-top-actions {
 .inventory-content {
   position: relative;
   z-index: 1;
-  padding: 0 0.75rem 0.75rem;
+  padding: 0 var(--page-gutter) var(--card-gap);
 }
 
 @media (max-width: 768px) {
@@ -655,23 +625,16 @@ body.mobile-quick-mode .mobile-top-actions {
     overflow-x: hidden;
   }
 
-  #sticky-controls,
-  .inventory-content {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-  }
-
   .sticky-controls-wrap {
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
+    padding-left: var(--page-gutter-mobile);
+    padding-right: var(--page-gutter-mobile);
     border-left: 0;
     border-right: 0;
     border-radius: 0;
   }
 
   .inventory-content {
-    padding: 0 0.25rem 0.65rem;
+    padding: 0 var(--page-gutter-mobile) 0.65rem;
   }
 
   #sticky-controls .controls,
@@ -681,7 +644,7 @@ body.mobile-quick-mode .mobile-top-actions {
   }
 
   body.mobile-quick-mode {
-    padding: 0.35rem 0.25rem 0.6rem;
+    padding: 0.35rem var(--page-gutter-mobile) 0.6rem;
   }
 
   body.mobile-quick-mode .sticky-controls-wrap {
