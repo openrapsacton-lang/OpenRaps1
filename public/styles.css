@@ -17,6 +17,7 @@ body {
 
 
 .sticky-controls-wrap {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 30;
@@ -622,7 +623,14 @@ body.mobile-quick-mode .mobile-top-actions {
     width: 100%;
     margin: 0;
     padding: 0;
+  }
+
+  html {
     overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: clip;
   }
 
   .sticky-controls-wrap {
