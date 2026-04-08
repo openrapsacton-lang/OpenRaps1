@@ -655,20 +655,33 @@ body.mobile-quick-mode .mobile-top-actions {
     overflow-x: hidden;
   }
 
+  #sticky-controls,
+  .inventory-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
   .sticky-controls-wrap {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
     border-left: 0;
     border-right: 0;
     border-radius: 0;
   }
 
   .inventory-content {
-    padding: 0 0.5rem 0.65rem;
+    padding: 0 0.25rem 0.65rem;
+  }
+
+  #sticky-controls .controls,
+  .desktop-table-card {
+    margin-left: 0;
+    margin-right: 0;
   }
 
   body.mobile-quick-mode {
-    padding: 0.35rem 0.5rem 0.6rem;
+    padding: 0.35rem 0.25rem 0.6rem;
   }
 
   body.mobile-quick-mode .sticky-controls-wrap {
