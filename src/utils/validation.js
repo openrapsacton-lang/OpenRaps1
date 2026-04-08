@@ -56,6 +56,10 @@ function validateItemPayload(payload, { partial = false } = {}) {
     if (err) errors.push(err);
   }
 
+  if ((!partial || Object.hasOwn(payload, 'is_well')) && typeof payload.is_well !== 'boolean') {
+    errors.push('is_well must be true or false.');
+  }
+
 
   if (!partial || Object.hasOwn(payload, 'wine_type')) {
     const wineType = normalizeText(payload.wine_type);

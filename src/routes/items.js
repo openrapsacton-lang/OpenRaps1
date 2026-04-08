@@ -26,6 +26,13 @@ function nameExists(name, ignoreId = null) {
   return Boolean(row);
 }
 
+function parseWellFlag(value) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value === 1;
+  if (typeof value === 'string') return value.toLowerCase() === 'true' || value === '1';
+  return false;
+}
+
 router.get('/', (req, res) => {
   const items = listItems({
     search: req.query.search,
@@ -53,6 +60,7 @@ router.post('/', (req, res) => {
     unit: normalizeText(req.body.unit || 'bottle'),
     status: req.body.status,
     par_level: Number(req.body.par_level ?? 0),
+    is_well: parseWellFlag(req.body.is_well),
     wine_type: typeof req.body.wine_type === 'string' ? req.body.wine_type.trim() : '',
     notes: typeof req.body.notes === 'string' ? req.body.notes.trim() : ''
   };
@@ -83,6 +91,7 @@ router.put('/:id', (req, res) => {
     unit: normalizeText(req.body.unit || 'bottle'),
     status: req.body.status,
     par_level: Number(req.body.par_level ?? 0),
+    is_well: parseWellFlag(req.body.is_well),
     wine_type: typeof req.body.wine_type === 'string' ? req.body.wine_type.trim() : '',
     notes: typeof req.body.notes === 'string' ? req.body.notes.trim() : ''
   };

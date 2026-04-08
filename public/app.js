@@ -1,4 +1,4 @@
-const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Well', 'Wine', 'Beer', 'Syrups+', 'NA', 'Other'];
+const CATEGORIES = ['Vodka', 'Tequila', 'Rum', 'Whiskey', 'Gin', 'Liqueur', 'Wine', 'Beer', 'Syrups+', 'NA', 'Other'];
 const STATUSES = ['FULL', 'LOW', 'OUT', 'ORDERED', 'DISCONTINUED'];
 
 const TAB_KEYS = ['Total Stock', 'Well Stock', 'Liquor', 'Wine', 'Beer', 'Syrups+'];
@@ -21,7 +21,7 @@ function createDefaultTabState() {
 function createDefaultAllTabState() {
   return {
     'Total Stock': createDefaultTabState(),
-    'Well Stock': { ...createDefaultTabState(), category: 'Well' },
+    'Well Stock': { ...createDefaultTabState(), category: '' },
     Liquor: { ...createDefaultTabState(), category: '' },
     Wine: { ...createDefaultTabState(), category: 'Wine', wineType: 'All' },
     Beer: { ...createDefaultTabState(), category: 'Beer', beerPackaging: 'All' },
@@ -156,7 +156,6 @@ function applyTabConstraints(tab, uiState) {
   }
 
   if (tab === 'Well Stock') {
-    nextState.category = 'Well';
     return nextState;
   }
 
@@ -194,8 +193,8 @@ function syncCategoryFilterForActiveTab(preferredCategory = '') {
   const categoryFilter = $('#category-filter');
 
   if (state.activeTab === 'Well Stock') {
-    fillSelect(categoryFilter, ['Well'], false);
-    categoryFilter.value = 'Well';
+    fillSelect(categoryFilter, CATEGORIES, true);
+    categoryFilter.value = preferredCategory && CATEGORIES.includes(preferredCategory) ? preferredCategory : '';
     return;
   }
 
@@ -438,7 +437,7 @@ function getEffectiveQueryParamsFromUI() {
 
 function applyClientFilters(items) {
   return items.filter((item) => {
-    if (state.activeTab === 'Well Stock' && item.category !== 'Well') {
+    if (state.activeTab === 'Well Stock' && !item.is_well) {
       return false;
     }
 
@@ -680,6 +679,7 @@ function resetForm() {
   $('#unit').value = 'Bottle';
   $('#status').value = 'FULL';
   $('#par_level').value = '0';
+  $('#is_well').checked = false;
   wineTypeInput.value = '';
   $('#notes').value = '';
   $('#form-error').textContent = '';
@@ -718,6 +718,7 @@ function openEditModal(item) {
   $('#unit').value = normalizeUnitValue(item.unit);
   $('#status').value = item.status;
   $('#par_level').value = item.par_level;
+  $('#is_well').checked = Boolean(item.is_well);
   wineTypeInput.value = item.wine_type || '';
   $('#notes').value = item.notes || '';
   $('#form-error').textContent = '';
@@ -950,6 +951,7 @@ async function handleSave(event) {
     unit: $('#unit').value,
     status: $('#status').value,
     par_level: Number($('#par_level').value),
+    is_well: $('#is_well').checked,
     wine_type: wineTypeInput.value,
     notes: $('#notes').value
   };
@@ -1192,10 +1194,11 @@ function downloadCsv(filename, csvContent) {
 }
 
 function exportFullInventoryCsv() {
-  const columns = ['name', 'category', 'unit', 'quantity', 'status', 'par_level', 'notes', 'updated_at'];
+  const columns = ['name', 'category', 'is_well', 'unit', 'quantity', 'status', 'par_level', 'notes', 'updated_at'];
   const rows = state.items.map((item) => ({
     name: item.name,
     category: item.category,
+    is_well: item.is_well ? 'Yes' : 'No',
     unit: item.unit,
     quantity: item.quantity,
     status: item.status,

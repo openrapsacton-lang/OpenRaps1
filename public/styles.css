@@ -8,7 +8,7 @@
 
 body {
   margin: 0;
-  padding: 0.75rem;
+  padding: 0;
   background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 65%, #f5f7fb 100%);
 }
 
@@ -643,4 +643,5 @@ body.mobile-quick-mode .mobile-top-actions {
 .inventory-content {
   position: relative;
   z-index: 1;
+  padding: 0 0.75rem 0.75rem;
 }

@@ -5,7 +5,6 @@ const VALID_CATEGORIES = [
   'Whiskey',
   'Gin',
   'Liqueur',
-  'Well',
   'Wine',
   'Red Wine',
   'White Wine',
