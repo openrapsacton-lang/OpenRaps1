@@ -645,3 +645,34 @@ body.mobile-quick-mode .mobile-top-actions {
   z-index: 1;
   padding: 0 0.75rem 0.75rem;
 }
+
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .sticky-controls-wrap {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .inventory-content {
+    padding: 0 0.5rem 0.65rem;
+  }
+
+  body.mobile-quick-mode {
+    padding: 0.35rem 0.5rem 0.6rem;
+  }
+
+  body.mobile-quick-mode .sticky-controls-wrap {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
