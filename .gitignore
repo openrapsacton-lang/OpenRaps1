@@ -1,6 +1,11 @@
 node_modules/
 
+# Environment files
+.env
+
 # Runtime SQLite databases
-app-data/*.sqlite
-data/*.sqlite
+*.sqlite
 *.db
+app-data/
+data/*.sqlite
+runtime-db/
