@@ -62,6 +62,26 @@ On first run, if the database is empty, the app seeds items like:
 - If `DB_PATH` is not set, it uses `app-data/bar_inventory.sqlite` in local development.
 - The DB directory is auto-created if it does not exist.
 
+
+### AWS EC2 + EBS deployment notes (SQLite kept)
+
+This app is ready to run on EC2 while keeping SQLite:
+
+- `PORT` controls the HTTP port (defaults to `3000`).
+- `DB_PATH` controls the runtime SQLite file location.
+- If `DB_PATH` is not set, local development uses `app-data/bar_inventory.sqlite`.
+- On startup, the app creates the parent DB directory automatically.
+- Seed data only runs when `items` is empty (`COUNT(*) = 0`). Existing populated databases are never overwritten.
+
+Recommended production pattern:
+
+1. Mount your EBS volume (example mount: `/mnt/bar-data`).
+2. Copy your live SQLite file to that mounted path.
+3. Run the app with `DB_PATH=/mnt/bar-data/bar_inventory.sqlite`.
+
+`npm run reset-inventory` is a **manual local/dev utility** to delete the configured DB file before a fresh reseed. Do not run it automatically in production.
+
+
 ## Project structure
 
 ```text

@@ -2,7 +2,13 @@ const fs = require('fs');
 const path = require('path');
 
 function getDbPath() {
-  return process.env.DB_PATH || path.join(__dirname, '..', '..', 'app-data', 'bar_inventory.sqlite');
+  const configuredPath = process.env.DB_PATH && process.env.DB_PATH.trim();
+
+  if (configuredPath) {
+    return path.resolve(configuredPath);
+  }
+
+  return path.join(__dirname, '..', '..', 'app-data', 'bar_inventory.sqlite');
 }
 
 function ensureDbDirectoryExists(dbPath) {
