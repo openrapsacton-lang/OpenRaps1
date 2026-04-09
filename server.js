@@ -6,6 +6,7 @@ const itemsRouter = require('./src/routes/items');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 initDb();
 
@@ -26,6 +27,6 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
 });
