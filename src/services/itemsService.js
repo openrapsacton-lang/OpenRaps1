@@ -31,9 +31,16 @@ function listItems({ search, category, status, sort = 'status', order = 'desc' }
   const where = [];
   const params = [];
 
-  if (search) {
-    where.push('LOWER(name) LIKE ?');
-    params.push(`%${search.toLowerCase()}%`);
+  const normalizedSearch = String(search || '').trim().toLowerCase();
+  if (normalizedSearch) {
+    const normalizedCategorySearch = normalizedSearch.replace(/[^a-z0-9]/g, '') || '__no_category_match__';
+
+    where.push(`(
+      LOWER(name) LIKE ?
+      OR LOWER(category) LIKE ?
+      OR LOWER(REPLACE(REPLACE(category, '+', ''), ' ', '')) LIKE ?
+    )`);
+    params.push(`%${normalizedSearch}%`, `%${normalizedSearch}%`, `%${normalizedCategorySearch}%`);
   }
 
   if (category) {
