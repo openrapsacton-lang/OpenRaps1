@@ -68,6 +68,7 @@ const mobileRedoBtn = $('#mobile-redo-btn');
 const mobileSortBtn = $('#mobile-sort-btn');
 const mobileSortMenu = $('#mobile-sort-menu');
 const inventoryContent = document.querySelector('.inventory-content');
+const tabsWrap = document.querySelector('.tabs-wrap');
 
 const SWIPE_MIN_DISTANCE = 60;
 const SWIPE_MAX_VERTICAL_DRIFT = 44;
@@ -319,12 +320,25 @@ function updateTabButtons() {
   });
 }
 
-function switchTab(newTab) {
+function keepActiveTabVisible() {
+  if (!tabsWrap) return;
+  const activeBtn = tabButtons.find((btn) => btn.dataset.tab === state.activeTab);
+  if (!activeBtn) return;
+
+  activeBtn.scrollIntoView({
+    behavior: 'smooth',
+    block: 'nearest',
+    inline: 'center'
+  });
+}
+
+function setActiveTab(newTab) {
   if (!TAB_KEYS.includes(newTab) || newTab === state.activeTab) return;
   saveCurrentTabState();
   state.activeTab = newTab;
   loadTabStateIntoUI(newTab);
   updateTabButtons();
+  keepActiveTabVisible();
   persistTabPreferences();
   loadItems();
 }
@@ -377,7 +391,7 @@ function wireMobileTabSwipeNavigation() {
     const nextIndex = Math.min(TAB_KEYS.length - 1, Math.max(0, currentIndex + direction));
     if (nextIndex === currentIndex) return;
 
-    switchTab(TAB_KEYS[nextIndex]);
+    setActiveTab(TAB_KEYS[nextIndex]);
   }, { passive: true });
 }
 
@@ -981,7 +995,7 @@ async function handleSave(event) {
       showToast('Item added successfully.');
     }
 
-    itemDialog.close();
+    closeItemDialog();
     await loadItems();
   } catch (err) {
     $('#form-error').textContent = err.message;
@@ -1001,7 +1015,7 @@ async function handleDeleteCurrentItem() {
       type: 'delete',
       deletedSnapshot
     });
-    itemDialog.close();
+    closeItemDialog();
     showToast('Item deleted.');
     await loadItems();
   } catch (err) {
@@ -1013,6 +1027,18 @@ function getFullQuantityFromPar(item) {
   const par = Number(item?.par_level ?? item?.par);
   if (!Number.isFinite(par) || par < 0) return null;
   return Math.ceil(par);
+}
+
+function restoreViewportAfterDialogClose() {
+  const activeElement = document.activeElement;
+  if (activeElement && typeof activeElement.blur === 'function') {
+    activeElement.blur();
+  }
+}
+
+function closeItemDialog() {
+  restoreViewportAfterDialogClose();
+  itemDialog.close();
 }
 
 async function handleRowAction(event) {
@@ -1331,7 +1357,7 @@ function wireUpFilters() {
   }
 
   tabButtons.forEach((btn) => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
   });
 
 }
@@ -1349,6 +1375,7 @@ function init() {
   updateMobileSortButtonLabel();
   loadTabStateIntoUI(state.activeTab);
   updateTabButtons();
+  keepActiveTabVisible();
 
   wireUpFilters();
   wireKeyboardShortcuts();
@@ -1365,7 +1392,8 @@ function init() {
   $('#export-full-btn').addEventListener('click', exportFullInventoryCsv);
   $('#export-order-btn').addEventListener('click', exportOrderListCsv);
   itemForm.addEventListener('submit', handleSave);
-  $('#cancel-btn').addEventListener('click', () => itemDialog.close());
+  $('#cancel-btn').addEventListener('click', closeItemDialog);
+  itemDialog.addEventListener('close', restoreViewportAfterDialogClose);
   $('#delete-btn').addEventListener('click', handleDeleteCurrentItem);
   $('#category').addEventListener('change', syncWineTypeInputVisibility);
   $('#items-table tbody').addEventListener('click', handleRowAction);
